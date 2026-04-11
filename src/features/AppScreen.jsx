@@ -2,15 +2,28 @@ import { useMemo, useState } from 'react'
 import {
   Bell,
   Bot,
+  CheckCircle2,
   ChevronRight,
   FileWarning,
+  HeartHandshake,
   LogOut,
+  MapPin,
   ShieldAlert,
   Siren,
   Sparkles,
   Trophy,
 } from 'lucide-react'
-import { bottomTabs, featureCards, kindbotMessages, quests, reports } from '../data/appData.jsx'
+import {
+  bottomTabs,
+  featureCards,
+  kindbotPlaybook,
+  missionCards,
+  priorityOptions,
+  questScenarios,
+  reportPresets,
+  responderTeam,
+  shieldFlaggedWords,
+} from '../data/appData.jsx'
 import KindReachLogo from '../components/KindReachLogo'
 
 function createAnimeAvatarSvg(name = 'Resty') {
@@ -33,38 +46,42 @@ function createAnimeAvatarSvg(name = 'Resty') {
           <stop offset="100%" stop-color="#4f7cff"/>
         </linearGradient>
       </defs>
-
       <rect width="320" height="320" rx="68" fill="url(#bg)"/>
       <circle cx="160" cy="160" r="136" fill="rgba(255,255,255,0.08)"/>
-
       <path d="M86 120c0-45 33-76 74-76h14c46 0 76 31 76 74 0 28-12 44-20 54-8-26-28-42-70-42-39 0-58 15-72 36-4-10-2-27-2-46z" fill="url(#hair)"/>
       <circle cx="160" cy="138" r="58" fill="#ffd9c7"/>
       <path d="M104 120c8-30 32-48 56-48 34 0 56 21 63 50-16-18-36-26-63-26-23 0-40 6-56 24z" fill="url(#hair)"/>
-
       <ellipse cx="139" cy="138" rx="7" ry="9" fill="#37446a"/>
       <ellipse cx="181" cy="138" rx="7" ry="9" fill="#37446a"/>
       <path d="M144 166c10 8 22 8 32 0" stroke="#cf7d8c" stroke-width="6" stroke-linecap="round" fill="none"/>
-      <circle cx="120" cy="156" r="8" fill="#ffb0c0" fill-opacity="0.45"/>
-      <circle cx="200" cy="156" r="8" fill="#ffb0c0" fill-opacity="0.45"/>
-
       <path d="M96 250c10-38 42-66 64-66s54 28 64 66" fill="url(#shirt)"/>
-      <rect x="112" y="238" width="96" height="20" rx="10" fill="rgba(255,255,255,0.18)"/>
-
-      <circle cx="245" cy="72" r="18" fill="rgba(255,255,255,0.18)"/>
-      <circle cx="83" cy="248" r="14" fill="rgba(255,255,255,0.18)"/>
-      <circle cx="265" cy="230" r="10" fill="rgba(255,255,255,0.12)"/>
-
-      <text x="160" y="298" text-anchor="middle" font-size="34" font-family="Inter, Arial, sans-serif" font-weight="700" fill="rgba(255,255,255,0.92)">
-        ${initial}
-      </text>
+      <text x="160" y="298" text-anchor="middle" font-size="34" font-family="Inter, Arial, sans-serif" font-weight="700" fill="rgba(255,255,255,0.92)">${initial}</text>
     </svg>
   `
 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
 }
 
-function HomeTab({ user, onNavigate, onOpenSos }) {
+function createReportId(count) {
+  return `KR-${2400 + count + 1}`
+}
+
+function makeSaferMessage(input) {
+  return input
+    .replace(/bodoh|tolol|goblok|idiot|bego|cupu|jelek|norak/gi, 'kurang tepat')
+    .replace(/banget/gi, '')
+    .trim() || 'Aku kesal, tapi aku ingin menyampaikan ini dengan lebih sopan.'
+}
+
+function statusStepClass(status, index) {
+  const order = ['Menunggu verifikasi', 'Terverifikasi', 'Diproses', 'Selesai']
+  const currentIndex = order.indexOf(status)
+  return index <= currentIndex ? 'active' : ''
+}
+
+function HomeTab({ user, reports, onNavigate, onOpenSos }) {
   const heroAvatar = user.avatar || createAnimeAvatarSvg(user.name)
+  const criticalCount = reports.filter((item) => item.priority === 'Tinggi').length
 
   return (
     <>
@@ -79,13 +96,18 @@ function HomeTab({ user, onNavigate, onOpenSos }) {
 
             <div>
               <h2>Halo, {user.name.split(' ')[0]} 👋</h2>
-              <p>Semua perlindungan, dukungan, dan edukasi anti-bullying ada dalam satu aplikasi.</p>
+              <p>{user.focus}</p>
             </div>
           </div>
         </div>
 
-        <div className="point-badge">
-          <Sparkles size={15} /> {user.points} pts
+        <div className="home-insight-grid">
+          <div className="point-badge">
+            <Sparkles size={15} /> {user.points} pts
+          </div>
+          <div className="point-badge ghost">
+            <Bell size={15} /> {criticalCount} prioritas tinggi
+          </div>
         </div>
       </section>
 
@@ -102,7 +124,7 @@ function HomeTab({ user, onNavigate, onOpenSos }) {
       <section className="sos-card">
         <div>
           <span className="small-caps rose">Emergency</span>
-          <strong>Aktifkan mode darurat dan panggil bantuan sekitar</strong>
+          <strong>Mode respon cepat sekolah siap diaktifkan</strong>
         </div>
         <button onClick={onOpenSos}>
           <Siren size={16} /> SOS
@@ -126,8 +148,8 @@ function HomeTab({ user, onNavigate, onOpenSos }) {
           <button className="mini-action" onClick={() => onNavigate('report')}>
             <FileWarning size={16} /> Lapor
           </button>
-          <button className="mini-action">
-            <Bell size={16} /> Alert
+          <button className="mini-action" onClick={() => onNavigate('profile')}>
+            <Trophy size={16} /> Quest
           </button>
         </div>
       </section>
@@ -135,14 +157,10 @@ function HomeTab({ user, onNavigate, onOpenSos }) {
   )
 }
 
-function ShieldTab({
-  shieldEnabled,
-  setShieldEnabled,
-  shieldInput,
-  setShieldInput,
-  hasWarning,
-  detectedWords,
-}) {
+function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInput, detectedWords }) {
+  const hasWarning = shieldEnabled && detectedWords.length > 0
+  const saferMessage = makeSaferMessage(shieldInput)
+
   return (
     <section className="panel grow">
       <div className="panel-head solid-bottom">
@@ -152,65 +170,66 @@ function ShieldTab({
         </div>
 
         <label className="shield-toggle">
-          <input
-            type="checkbox"
-            checked={shieldEnabled}
-            onChange={(e) => setShieldEnabled(e.target.checked)}
-          />
+          <input type="checkbox" checked={shieldEnabled} onChange={(e) => setShieldEnabled(e.target.checked)} />
           <span>{shieldEnabled ? 'ON' : 'OFF'}</span>
         </label>
       </div>
 
       <div className="shield-info-card">
-        <strong>Status Proteksi</strong>
-        <p>
-          Saat aktif, Cyber-Shield membantu mendeteksi kata atau kalimat yang berpotensi menyakiti orang lain sebelum dikirim.
-        </p>
+        <strong>Simulasi sebelum pesan terkirim</strong>
+        <p>Fokus prototipe ini adalah menunjukkan bahwa sistem menahan pesan berisiko lalu memberi nudge dan alternatif kalimat yang lebih aman.</p>
+      </div>
+
+      <div className="shield-chat-shell">
+        <div className="shield-message incoming">Resty, tolong kumpulkan tugasmu sebelum jam 2 ya.</div>
+        <div className="shield-message outgoing muted">Draf balasan kamu akan dicek Cyber-Shield sebelum dikirim.</div>
       </div>
 
       <div className="shield-typing-box">
-        <label htmlFor="shield-demo">Coba ketik pesan</label>
+        <label htmlFor="shield-demo">Draf pesan</label>
         <textarea
           id="shield-demo"
           value={shieldInput}
           onChange={(e) => setShieldInput(e.target.value)}
-          placeholder="Contoh: kamu bodoh banget..."
+          placeholder="Contoh: kamu bodoh banget, kerja kelompok jadi kacau"
         />
       </div>
 
       {hasWarning ? (
         <div className="shield-warning-card">
           <strong>Peringatan Cyber-Shield</strong>
-          <p>
-            Sistem mendeteksi kata yang berisiko: <b>{detectedWords.join(', ')}</b>
-          </p>
+          <p>Sistem mendeteksi kata berisiko: <b>{detectedWords.join(', ')}</b>. Tahan kirim dulu dan gunakan jeda refleksi.</p>
+          <div className="shield-rewrite-box">
+            <span className="small-caps amber">Saran kalimat lebih aman</span>
+            <p>{saferMessage}</p>
+          </div>
           <div className="shield-warning-actions">
-            <button className="mini-action">Tinjau ulang pesan</button>
-            <button className="mini-action">Ubah kalimat jadi lebih baik</button>
+            <button className="mini-action" onClick={() => setShieldInput('')}>Hapus draf</button>
+            <button className="mini-action" onClick={() => setShieldInput(saferMessage)}>Gunakan saran</button>
           </div>
         </div>
       ) : (
         <div className="shield-safe-card">
-          <strong>{shieldEnabled ? 'Tidak ada kata berisiko terdeteksi' : 'Cyber-Shield sedang nonaktif'}</strong>
-          <p>
-            {shieldEnabled
-              ? 'Pesan terlihat aman untuk dikirim.'
-              : 'Aktifkan Cyber-Shield untuk mencoba simulasi proteksi keyboard.'}
-          </p>
+          <strong>{shieldEnabled ? 'Draf aman untuk dikirim' : 'Cyber-Shield sedang nonaktif'}</strong>
+          <p>{shieldEnabled ? 'Belum ada kata berisiko terdeteksi pada draf pesanmu.' : 'Aktifkan Cyber-Shield untuk melihat simulasi proteksi keyboard.'}</p>
         </div>
       )}
 
       <div className="shield-system-note">
-        <strong>Catatan Implementasi Nyata</strong>
-        <p>
-          Versi sistem keyboard sungguhan memerlukan pengembangan aplikasi native Android sebagai custom keyboard (IME). Versi web ini menyediakan simulasi perilaku dan alur pengalaman pengguna.
-        </p>
+        <strong>Catatan prototype</strong>
+        <p>Tampilan ini sengaja dibuat menyerupai alur keyboard protection agar poin utama PDF lebih kuat saat dipresentasikan.</p>
       </div>
     </section>
   )
 }
 
-function KindbotTab() {
+function KindbotTab({ onNavigate }) {
+  const [messages, setMessages] = useState(kindbotPlaybook.opening)
+
+  function runFlow(flowKey) {
+    setMessages([...kindbotPlaybook.opening, ...kindbotPlaybook.flows[flowKey]])
+  }
+
   return (
     <section className="panel grow">
       <div className="panel-head solid-bottom">
@@ -219,40 +238,44 @@ function KindbotTab() {
           <h3>KindBot Chat</h3>
         </div>
       </div>
-      <div className="chat-list">
-        {kindbotMessages.map((msg, idx) => (
-          <div key={idx} className={`chat-bubble ${msg.from}`}>
+
+      <div className="chat-list chat-list-grow">
+        {messages.map((msg, idx) => (
+          <div key={`${msg.from}-${idx}`} className={`chat-bubble ${msg.from}`}>
             {msg.text}
           </div>
         ))}
       </div>
+
+      <div className="kindbot-chip-row">
+        <button className="mini-action" onClick={() => runFlow('ditemani')}>Temani aku dulu</button>
+        <button className="mini-action" onClick={() => runFlow('laporan')}>Bantu susun laporan</button>
+        <button className="mini-action" onClick={() => runFlow('dukungTeman')}>Aku ingin bantu teman</button>
+      </div>
+
       <div className="chat-actions">
-        <button className="chat-cta primary">Butuh bantuan sekarang</button>
-        <button className="chat-cta">Susun laporan aman</button>
+        <button className="chat-cta primary" onClick={() => onNavigate('report')}>Buka Laman Lapor</button>
+        <button className="chat-cta">Hubungi guru BK</button>
       </div>
     </section>
   )
 }
 
-function ReportTab() {
-  const [reportItems, setReportItems] = useState(reports)
+function ReportTab({ reports, onCreateReport }) {
   const [form, setForm] = useState({
     reporterRole: 'Saksi',
     incidentType: 'Verbal Bullying',
     incidentChannel: 'Grup kelas online',
-    chronology:
-      'Saya melihat teman saya diejek terus menerus oleh beberapa akun lain di grup kelas.',
+    chronology: 'Saya melihat teman saya diejek terus menerus oleh beberapa akun lain di grup kelas.',
     evidenceName: '',
     anonymousMode: true,
+    priority: 'Tinggi',
   })
 
-  const timelineSteps = ['Terkirim', 'Diverifikasi', 'Diproses', 'Selesai']
+  const timelineSteps = ['Menunggu verifikasi', 'Terverifikasi', 'Diproses', 'Selesai']
 
   function updateField(key, value) {
-    setForm((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
+    setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   function handleEvidenceChange(event) {
@@ -263,19 +286,28 @@ function ReportTab() {
 
   function handleSubmitReport() {
     const newReport = {
-      id: `KR-${2400 + reportItems.length + 1}`,
+      id: createReportId(reports.length),
       type: form.incidentType,
+      channel: form.incidentChannel,
       place: form.incidentChannel,
-      status: 'Terkirim',
-      role: form.reporterRole,
+      status: 'Menunggu verifikasi',
+      priority: form.priority,
+      reporterRole: form.reporterRole,
+      reporterLabel: form.anonymousMode ? 'Anonim' : 'Pelapor dikenali sekolah',
+      chronology: form.chronology,
+      evidenceName: form.evidenceName,
+      anonymousMode: form.anonymousMode,
+      createdAt: 'Hari ini • 09:41',
     }
 
-    setReportItems((prev) => [newReport, ...prev])
+    onCreateReport(newReport)
 
     setForm((prev) => ({
       ...prev,
       chronology: '',
       evidenceName: '',
+      anonymousMode: true,
+      priority: 'Tinggi',
     }))
   }
 
@@ -290,105 +322,83 @@ function ReportTab() {
       </div>
 
       <div className="report-security-card">
-        <strong>Anonim dan terenkripsi</strong>
-        <p>
-          Laporan hanya diteruskan ke tim penanganan sekolah. Identitas pelapor tidak
-          dibuka kepada siswa lain.
-        </p>
+        <strong>Anonim, aman, dan langsung ke tim sekolah</strong>
+        <p>Untuk prototype, fokus utama yang ditonjolkan adalah rasa aman pelapor, bukti, kronologi, dan alur verifikasi sekolah.</p>
       </div>
 
       <div className="report-form">
         <label>
           Saya melapor sebagai
-          <select
-            value={form.reporterRole}
-            onChange={(e) => updateField('reporterRole', e.target.value)}
-          >
-            <option value="Saksi">Saksi</option>
-            <option value="Korban">Korban</option>
-            <option value="Teman Korban">Teman Korban</option>
+          <select value={form.reporterRole} onChange={(e) => updateField('reporterRole', e.target.value)}>
+            <option>Saksi</option>
+            <option>Korban</option>
+            <option>Teman dekat korban</option>
           </select>
         </label>
 
         <label>
           Jenis kejadian
-          <select
-            value={form.incidentType}
-            onChange={(e) => updateField('incidentType', e.target.value)}
-          >
-            <option value="Verbal Bullying">Verbal Bullying</option>
-            <option value="Cyberbullying">Cyberbullying</option>
-            <option value="Intimidasi">Intimidasi</option>
-            <option value="Pengucilan Sosial">Pengucilan Sosial</option>
-            <option value="Kekerasan Fisik">Kekerasan Fisik</option>
+          <select value={form.incidentType} onChange={(e) => updateField('incidentType', e.target.value)}>
+            {reportPresets.map((option) => <option key={option}>{option}</option>)}
           </select>
         </label>
 
         <label>
-          Lokasi / media kejadian
-          <input
-            value={form.incidentChannel}
-            onChange={(e) => updateField('incidentChannel', e.target.value)}
-            placeholder="Contoh: Koridor sekolah / Grup kelas online"
-          />
+          Lokasi / kanal kejadian
+          <input value={form.incidentChannel} onChange={(e) => updateField('incidentChannel', e.target.value)} />
         </label>
 
         <label>
-          Kronologi singkat
-          <textarea
-            value={form.chronology}
-            onChange={(e) => updateField('chronology', e.target.value)}
-            placeholder="Jelaskan kejadian secara singkat dan jelas..."
-          />
+          Tingkat urgensi
+          <select value={form.priority} onChange={(e) => updateField('priority', e.target.value)}>
+            {priorityOptions.map((option) => <option key={option}>{option}</option>)}
+          </select>
+        </label>
+
+        <label>
+          Kronologi
+          <textarea value={form.chronology} onChange={(e) => updateField('chronology', e.target.value)} />
         </label>
 
         <label className="report-upload-box">
           Bukti pendukung
           <input type="file" onChange={handleEvidenceChange} />
-          <span className="report-upload-note">
-            {form.evidenceName ? `File terpilih: ${form.evidenceName}` : 'Unggah screenshot / foto / dokumen pendukung'}
-          </span>
+          <span className="report-upload-note">{form.evidenceName || 'Belum ada file dipilih'}</span>
         </label>
 
         <label className="report-anon-toggle">
-          <input
-            type="checkbox"
-            checked={form.anonymousMode}
-            onChange={(e) => updateField('anonymousMode', e.target.checked)}
-          />
+          <input type="checkbox" checked={form.anonymousMode} onChange={(e) => updateField('anonymousMode', e.target.checked)} />
+          <span>Sembunyikan identitas saya dari siswa lain</span>
         </label>
 
-        <button className="submit-demo" type="button" onClick={handleSubmitReport}>
-          Kirim laporan
-        </button>
+        <button className="submit-demo" onClick={handleSubmitReport}>Kirim laporan aman</button>
       </div>
 
       <div className="report-timeline-wrap">
-        <div className="panel-head">
-          <h3>Status tindak lanjut</h3>
-          <span className="chip">Tracking</span>
-        </div>
-
+        <span className="small-caps">Alur tindak lanjut</span>
         <div className="report-timeline-row">
           {timelineSteps.map((step) => (
-            <div key={step} className="report-step-pill">
-              {step}
-            </div>
+            <div key={step} className="report-step-pill">{step}</div>
           ))}
         </div>
       </div>
 
       <div className="report-status-list">
-        {reportItems.map((report) => (
-          <article key={report.id} className="report-card report-card-detailed">
+        {reports.slice(0, 3).map((item) => (
+          <article key={item.id} className="report-card report-card-stack">
             <div>
-              <strong>{report.id}</strong>
-              <p>
-                {report.type} • {report.place}
-              </p>
-              {report.role && <small>Pelapor: {report.role}</small>}
+              <div className="admin-case-title-row">
+                <strong>{item.id}</strong>
+                <span className="chip">{item.priority}</span>
+              </div>
+              <p>{item.type} • {item.place}</p>
+              <small>{item.reporterLabel} • {item.createdAt}</small>
             </div>
-            <span>{report.status}</span>
+            <div className="report-step-status-row">
+              {timelineSteps.map((step, index) => (
+                <span key={step} className={`report-mini-step ${statusStepClass(item.status, index)}`}>{step}</span>
+              ))}
+            </div>
           </article>
         ))}
       </div>
@@ -396,205 +406,113 @@ function ReportTab() {
   )
 }
 
-function ProfileTab({ user }) {
-  const avatarSrc = user.avatar || createAnimeAvatarSvg(user.name)
+function ProfileTab({ user, onResolveQuest }) {
+  const [activeScenario, setActiveScenario] = useState(questScenarios[0])
+  const [feedback, setFeedback] = useState('')
+  const [completedIds, setCompletedIds] = useState([])
+
+  function selectOption(option) {
+    setFeedback(`${option.outcome} (+${option.points} pts)`)
+    if (!completedIds.includes(activeScenario.id)) {
+      onResolveQuest(option.points)
+      setCompletedIds((prev) => [...prev, activeScenario.id])
+    }
+  }
 
   return (
     <section className="panel grow profile-panel">
-      <div className="profile-avatar-stage">
-        <div className="avatar-orbit orbit-a" />
-        <div className="avatar-orbit orbit-b" />
-
-        <div className="profile-hero-ring">
-          <img src={avatarSrc} alt={user.name} className="profile-hero-image" />
-        </div>
-
-        <span className="avatar-badge-float badge-one">✨</span>
-        <span className="avatar-badge-float badge-two">💜</span>
+      <div className="avatar-circle large-avatar">
+        <img src={createAnimeAvatarSvg(user.name)} alt={user.name} className="profile-avatar-img" />
       </div>
-
       <h3>{user.name}</h3>
-      <p>{user.school}</p>
+      <span className="chip">{user.roleLabel}</span>
 
-      <div className="profile-stats">
-        <div>
-          <strong>{user.points}</strong>
-          <span>Points</span>
-        </div>
-        <div>
-          <strong>{user.streak}</strong>
-          <span>Streak</span>
-        </div>
-        <div>
-          <strong>Lv. 7</strong>
-          <span>Level</span>
+      <div className="level-card">
+        <strong>{user.level}</strong>
+        <p>{user.school} • {user.department}</p>
+        <div className="profile-stats-grid">
+          <div>
+            <span>Poin</span>
+            <strong>{user.points}</strong>
+          </div>
+          <div>
+            <span>Streak</span>
+            <strong>{user.streak} hari</strong>
+          </div>
         </div>
       </div>
 
-      <article className="level-card">
-        <span className="small-caps mint">Current badge</span>
-        <strong>{user.level}</strong>
-        <p>Kamu aktif membantu menciptakan lingkungan sekolah yang suportif dan aman.</p>
-      </article>
-
-      <section className="quest-list" style={{ width: '100%' }}>
-        {quests.map((quest) => (
+      <div className="quest-list compact-quest-list">
+        {missionCards.map((quest) => (
           <article key={quest.title} className="quest-card">
             <div className="quest-top">
-              <div>
-                <strong>{quest.title}</strong>
-                <p>{quest.xp}</p>
-              </div>
-              <Trophy size={18} />
+              <strong>{quest.title}</strong>
+              <span>{quest.xp}</span>
             </div>
-
-            <div className="progress-bar">
-              <div style={{ width: `${quest.progress}%` }} />
-            </div>
+            <div className="progress-bar"><div style={{ width: `${quest.progress}%` }} /></div>
           </article>
         ))}
-      </section>
+      </div>
+
+      <div className="quest-simulator-card">
+        <div className="panel-head solid-bottom">
+          <div>
+            <span className="small-caps amber">Kind-Quest simulator</span>
+            <h3>{activeScenario.title}</h3>
+          </div>
+          <span className="chip">{activeScenario.badge}</span>
+        </div>
+
+        <p className="quest-summary">{activeScenario.summary}</p>
+        <p className="quest-prompt">{activeScenario.prompt}</p>
+
+        <div className="quest-tab-row">
+          {questScenarios.map((scenario) => (
+            <button key={scenario.id} className={`mini-action ${scenario.id === activeScenario.id ? 'active-chip' : ''}`} onClick={() => { setActiveScenario(scenario); setFeedback('') }}>
+              {scenario.badge}
+            </button>
+          ))}
+        </div>
+
+        <div className="quest-option-list">
+          {activeScenario.options.map((option) => (
+            <button key={option.id} className="quest-option-card" onClick={() => selectOption(option)}>
+              <HeartHandshake size={16} />
+              <span>{option.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {feedback && (
+          <div className="quest-feedback-card">
+            <CheckCircle2 size={16} />
+            <span>{feedback}</span>
+          </div>
+        )}
+      </div>
     </section>
   )
 }
 
-function createResponderAvatarSvg(name = 'R') {
-  const initial = (name?.trim?.()?.charAt(0) || 'R').toUpperCase()
-
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220">
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#6f5bff"/>
-          <stop offset="100%" stop-color="#9b59ff"/>
-        </linearGradient>
-        <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#23285e"/>
-          <stop offset="100%" stop-color="#4f39a9"/>
-        </linearGradient>
-      </defs>
-
-      <rect width="220" height="220" rx="56" fill="url(#bg)"/>
-      <circle cx="110" cy="112" r="82" fill="rgba(255,255,255,0.08)"/>
-
-      <path d="M62 86c0-29 21-50 50-50h5c31 0 52 21 52 50 0 16-6 28-15 37-6-19-20-30-46-30-24 0-38 9-48 25-4-7-3-18-3-32z" fill="url(#hair)"/>
-      <circle cx="110" cy="98" r="39" fill="#ffd9c7"/>
-      <path d="M75 85c7-20 22-31 36-31 24 0 40 14 45 33-12-11-26-16-45-16-14 0-25 4-36 14z" fill="url(#hair)"/>
-
-      <ellipse cx="95" cy="99" rx="5" ry="6.5" fill="#38466d"/>
-      <ellipse cx="125" cy="99" rx="5" ry="6.5" fill="#38466d"/>
-      <path d="M99 118c6 5 16 5 22 0" stroke="#d67b8d" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-
-      <path d="M70 172c11-28 31-45 40-45s29 17 40 45" fill="rgba(255,255,255,0.18)"/>
-
-      <text x="110" y="203" text-anchor="middle" font-size="24" font-family="Inter, Arial, sans-serif" font-weight="700" fill="rgba(255,255,255,0.92)">
-        ${initial}
-      </text>
-    </svg>
-  `
-
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
-}
-
-function createEmergencyHeroSvg() {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="520" height="320" viewBox="0 0 520 320">
-      <defs>
-        <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#d07b5b"/>
-          <stop offset="100%" stop-color="#a95bff"/>
-        </linearGradient>
-        <linearGradient id="shirt1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#8f81ff"/>
-          <stop offset="100%" stop-color="#6653ff"/>
-        </linearGradient>
-        <linearGradient id="shirt2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#1e275f"/>
-          <stop offset="100%" stop-color="#3348a1"/>
-        </linearGradient>
-      </defs>
-
-      <rect width="520" height="320" rx="42" fill="rgba(255,255,255,0.04)"/>
-      <rect x="278" y="26" width="190" height="236" rx="34" fill="url(#bg1)" opacity="0.9"/>
-
-      <circle cx="347" cy="92" r="34" fill="#f7c0b7"/>
-      <path d="M314 90c2-34 24-54 54-54 29 0 48 18 50 46-18-13-36-18-57-18-14 0-29 7-47 26z" fill="#9a5cff"/>
-      <path d="M300 244c8-50 38-84 66-84s58 35 66 84" fill="url(#shirt1)"/>
-      <path d="M286 178c16 12 25 21 35 38" stroke="#f7c0b7" stroke-width="12" stroke-linecap="round"/>
-      <path d="M414 182c-12 10-20 20-29 35" stroke="#f7c0b7" stroke-width="12" stroke-linecap="round"/>
-
-      <circle cx="404" cy="74" r="34" fill="#1d285e"/>
-      <path d="M372 80c0-28 19-46 46-46 27 0 45 18 45 45 0 14-4 28-13 40-10-18-24-30-41-30-14 0-24 5-37 17z" fill="#1d285e"/>
-      <path d="M372 242c8-54 33-89 58-89s50 34 58 89" fill="url(#shirt2)"/>
-      <path d="M386 180c-9 14-13 25-16 43" stroke="#f1b39f" stroke-width="12" stroke-linecap="round"/>
-      <path d="M454 176c8 14 12 25 15 42" stroke="#f1b39f" stroke-width="12" stroke-linecap="round"/>
-    </svg>
-  `
-
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
-}
-
 function SosScreen({ onClose }) {
-  const [isCalling, setIsCalling] = useState(false)
+  const [dispatchStarted, setDispatchStarted] = useState(false)
 
-  const emergencyHero = createEmergencyHeroSvg()
-
-  const responders = [
-    {
-      name: 'Dina',
-      role: 'Teman terdekat',
-      pos: 'top-left',
-      avatar: createResponderAvatarSvg('Dina'),
-    },
-    {
-      name: 'Pak Budi',
-      role: 'Guru BK',
-      pos: 'top-right',
-      avatar: createResponderAvatarSvg('Pak Budi'),
-    },
-    {
-      name: 'Rani',
-      role: 'Teman kelas',
-      pos: 'bottom-left',
-      avatar: createResponderAvatarSvg('Rani'),
-    },
-    {
-      name: 'Bu Sinta',
-      role: 'Wali kelas',
-      pos: 'bottom-right',
-      avatar: createResponderAvatarSvg('Bu Sinta'),
-    },
-  ]
-
-  if (!isCalling) {
+  if (!dispatchStarted) {
     return (
       <div className="phone-page sos-fullscreen sos-intro-screen">
-        <button className="sos-close-btn" onClick={onClose}>
-          Kembali
-        </button>
+        <button className="sos-close-btn" onClick={onClose}>Kembali</button>
 
-        <section className="sos-intro-top">
+        <section className="sos-intro-top solo-copy">
           <div className="sos-intro-copy">
-            <h2>Apakah anda dalam keadaan darurat?</h2>
-            <p>
-              Tekan tombol SOS, lokasi Anda saat ini akan dibagikan ke pusat bantuan
-              terdekat dan kontak darurat sekolah.
-            </p>
-          </div>
-
-          <div className="sos-intro-illustration">
-            <img src={emergencyHero} alt="Ilustrasi keadaan darurat" />
+            <h2>Butuh bantuan sekarang?</h2>
+            <p>Mode SOS menonjolkan alur yang diminta PDF: sinyal darurat, lokasi, dan kontak respon cepat sekolah dalam satu layar.</p>
           </div>
         </section>
 
         <section className="sos-intro-card">
-          <button
-            type="button"
-            className="sos-intro-button"
-            onClick={() => setIsCalling(true)}
-          >
+          <button type="button" className="sos-intro-button" onClick={() => setDispatchStarted(true)}>
             <span className="sos-intro-button-main">SOS</span>
-            <span className="sos-intro-button-sub">Tekan untuk panggil bantuan</span>
+            <span className="sos-intro-button-sub">Aktifkan respon cepat sekolah</span>
           </button>
         </section>
       </div>
@@ -603,61 +521,56 @@ function SosScreen({ onClose }) {
 
   return (
     <div className="phone-page sos-fullscreen sos-calling-screen">
-      <button className="sos-close-btn" onClick={onClose}>
-        Kembali
-      </button>
+      <button className="sos-close-btn" onClick={onClose}>Kembali</button>
 
       <div className="sos-header">
-        <h2>Panggilan Darurat</h2>
-        <p>
-          Sinyal bantuan sedang dikirim ke guru dan teman sekitar yang dapat membantu
-          menjangkau lokasi Anda.
-        </p>
+        <h2>Respon cepat sedang berjalan</h2>
+        <p>Sinyal bantuan prioritas sudah dikirim bersama titik lokasi darurat dan penerima terdekat.</p>
       </div>
 
-      <div className="sos-radar-area">
+      <div className="sos-location-pill">
+        <MapPin size={15} /> Koridor lantai 2 • Gedung Timur
+      </div>
+
+      <div className="sos-radar-area compact-radar">
         <div className="radar-ring ring-1 active" />
         <div className="radar-ring ring-2 active" />
         <div className="radar-ring ring-3 active" />
-        <div className="radar-ring ring-4 active" />
+        <div className="sos-center-pulse active"><span>SOS</span></div>
+      </div>
 
-        <div className="sos-center-pulse active">
-          <span>SOS</span>
-        </div>
-
-        {responders.map((person) => (
-          <div
-            key={person.name}
-            className={`responder responder-${person.pos} show`}
-          >
-            <img src={person.avatar} alt={person.name} className="responder-avatar-img" />
-            <span>{person.name}</span>
-            <small>{person.role}</small>
-          </div>
+      <div className="sos-responder-list">
+        {responderTeam.map((person) => (
+          <article key={person.name} className="sos-responder-card">
+            <div>
+              <strong>{person.name}</strong>
+              <p>{person.role}</p>
+            </div>
+            <div className="sos-responder-meta">
+              <span>{person.status}</span>
+              <strong>{person.eta}</strong>
+            </div>
+          </article>
         ))}
       </div>
 
       <div className="sos-status-card show">
-        <strong>Bantuan sedang dipanggil</strong>
-        <p>Notifikasi prioritas berhasil dikirim bersama informasi lokasi darurat Anda.</p>
+        <strong>Bantuan berhasil dipanggil</strong>
+        <p>Prototype ini menonjolkan elemen lokasi, tim sekolah, dan status respon agar fungsi SOS lebih terasa sesuai deskripsi PDF.</p>
       </div>
     </div>
   )
 }
 
-export default function AppScreen({ user, activeTab, onTabChange, onLogout }) {
+export default function AppScreen({ institution, user, activeTab, onTabChange, onCreateReport, onResolveQuest, reports, onLogout }) {
   const [showSosScreen, setShowSosScreen] = useState(false)
   const [shieldEnabled, setShieldEnabled] = useState(true)
   const [shieldInput, setShieldInput] = useState('')
 
-  const flaggedWords = ['bodoh', 'tolol', 'jelek', 'goblok', 'idiot', 'bego', 'cupu']
-
   const detectedWords = useMemo(() => {
     const lower = shieldInput.toLowerCase()
-    return flaggedWords.filter((word) => lower.includes(word))
+    return shieldFlaggedWords.filter((word) => lower.includes(word))
   }, [shieldInput])
-
-  const hasWarning = shieldEnabled && detectedWords.length > 0
 
   if (showSosScreen) {
     return <SosScreen onClose={() => setShowSosScreen(false)} />
@@ -669,12 +582,8 @@ export default function AppScreen({ user, activeTab, onTabChange, onLogout }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <KindReachLogo size={32} rounded={10} />
           <div>
-            <span className="small-caps">{user.role} • {user.schoolCode}</span>
-            <h2>
-              {activeTab === 'home'
-                ? 'KindReach'
-                : bottomTabs.find((tab) => tab.key === activeTab)?.label}
-            </h2>
+            <span className="small-caps">{institution.schoolCode} • {user.role}</span>
+            <h2>{activeTab === 'home' ? 'KindReach' : bottomTabs.find((tab) => tab.key === activeTab)?.label}</h2>
           </div>
         </div>
 
@@ -684,39 +593,18 @@ export default function AppScreen({ user, activeTab, onTabChange, onLogout }) {
       </header>
 
       <main className="app-content">
-        {activeTab === 'home' && (
-          <HomeTab
-            user={user}
-            onNavigate={onTabChange}
-            onOpenSos={() => setShowSosScreen(true)}
-          />
-        )}
-
-        {activeTab === 'shield' && (
-          <ShieldTab
-            shieldEnabled={shieldEnabled}
-            setShieldEnabled={setShieldEnabled}
-            shieldInput={shieldInput}
-            setShieldInput={setShieldInput}
-            hasWarning={hasWarning}
-            detectedWords={detectedWords}
-          />
-        )}
-
-        {activeTab === 'kindbot' && <KindbotTab />}
-        {activeTab === 'report' && <ReportTab />}
-        {activeTab === 'profile' && <ProfileTab user={user} />}
+        {activeTab === 'home' && <HomeTab user={user} reports={reports} onNavigate={onTabChange} onOpenSos={() => setShowSosScreen(true)} />}
+        {activeTab === 'shield' && <ShieldTab shieldEnabled={shieldEnabled} setShieldEnabled={setShieldEnabled} shieldInput={shieldInput} setShieldInput={setShieldInput} detectedWords={detectedWords} />}
+        {activeTab === 'kindbot' && <KindbotTab onNavigate={onTabChange} />}
+        {activeTab === 'report' && <ReportTab reports={reports} onCreateReport={onCreateReport} />}
+        {activeTab === 'profile' && <ProfileTab user={user} onResolveQuest={onResolveQuest} />}
       </main>
 
       <nav className="bottom-tabbar">
         {bottomTabs.map((tab) => {
           const Icon = tab.icon
           return (
-            <button
-              key={tab.key}
-              className={activeTab === tab.key ? 'active' : ''}
-              onClick={() => onTabChange(tab.key)}
-            >
+            <button key={tab.key} className={activeTab === tab.key ? 'active' : ''} onClick={() => onTabChange(tab.key)}>
               <Icon size={17} />
               <span>{tab.label}</span>
             </button>

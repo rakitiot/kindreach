@@ -1,31 +1,25 @@
 import { ArrowLeft, CheckCircle2, Clock3, FileWarning, ShieldAlert, Users } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
-const initialCases = [
-  {
-    id: 'CAS-001',
-    reporter: 'Anonim',
-    type: 'Verbal Bullying',
-    location: 'Grup kelas online',
-    status: 'Menunggu verifikasi',
-  },
-  {
-    id: 'CAS-002',
-    reporter: 'Anonim',
-    type: 'Intimidasi',
-    location: 'Koridor sekolah',
-    status: 'Diproses',
-  },
-]
+const FILTERS = ['Semua', 'Menunggu verifikasi', 'Terverifikasi', 'Diproses', 'Selesai']
 
-export default function AdminScreen({ user, onBackToApp, onLogout }) {
-  const [cases, setCases] = useState(initialCases)
+export default function AdminScreen({
+  institution,
+  user,
+  reports,
+  onUpdateReportStatus,
+  onBackToApp,
+  onLogout,
+}) {
+  const [activeFilter, setActiveFilter] = useState('Semua')
+  const [selectedCaseId, setSelectedCaseId] = useState(reports[0]?.id ?? null)
 
-  const updateCaseStatus = (id, status) => {
-    setCases((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, status } : item))
-    )
-  }
+  const filteredReports = useMemo(() => {
+    if (activeFilter === 'Semua') return reports
+    return reports.filter((item) => item.status === activeFilter)
+  }, [activeFilter, reports])
+
+  const selectedCase = reports.find((item) => item.id === selectedCaseId) || reports[0]
 
   return (
     <div className="phone-page admin-page">
@@ -38,29 +32,29 @@ export default function AdminScreen({ user, onBackToApp, onLogout }) {
         </button>
       </div>
 
-      <div className="admin-header">
+      <div className="admin-header admin-command-header">
         <span className="small-caps mint">Admin Dashboard</span>
-        <h2>Tim Penanganan Sekolah</h2>
+        <h2>Command center sekolah</h2>
         <p>
-          Kelola laporan masuk, validasi kasus, dan tindak lanjuti penanganan secara terstruktur.
+          {institution.name} • {institution.schoolCode} • dikelola oleh {user.name}
         </p>
       </div>
 
       <div className="admin-summary-grid">
         <div className="admin-summary-card">
           <FileWarning size={18} />
-          <strong>{cases.length}</strong>
-          <span>Laporan masuk</span>
+          <strong>{reports.length}</strong>
+          <span>Total laporan</span>
         </div>
         <div className="admin-summary-card">
           <Clock3 size={18} />
-          <strong>{cases.filter((c) => c.status === 'Menunggu verifikasi').length}</strong>
-          <span>Menunggu verifikasi</span>
+          <strong>{reports.filter((c) => c.status === 'Menunggu verifikasi').length}</strong>
+          <span>Perlu verifikasi</span>
         </div>
         <div className="admin-summary-card">
           <ShieldAlert size={18} />
-          <strong>{cases.filter((c) => c.status === 'Diproses').length}</strong>
-          <span>Diproses</span>
+          <strong>{reports.filter((c) => c.priority === 'Tinggi').length}</strong>
+          <span>Prioritas tinggi</span>
         </div>
         <div className="admin-summary-card">
           <Users size={18} />
@@ -69,31 +63,81 @@ export default function AdminScreen({ user, onBackToApp, onLogout }) {
         </div>
       </div>
 
+      <div className="admin-filter-row">
+        {FILTERS.map((filter) => (
+          <button
+            key={filter}
+            className={`mini-action ${activeFilter === filter ? 'active-chip' : ''}`}
+            onClick={() => setActiveFilter(filter)}
+          >
+            {filter}
+          </button>
+        ))}
+      </div>
+
       <div className="admin-case-list">
-        {cases.map((item) => (
-          <article key={item.id} className="admin-case-card">
+        {filteredReports.map((item) => (
+          <article
+            key={item.id}
+            className={`admin-case-card ${selectedCaseId === item.id ? 'selected' : ''}`}
+            onClick={() => setSelectedCaseId(item.id)}
+          >
             <div>
-              <strong>{item.id}</strong>
+              <div className="admin-case-title-row">
+                <strong>{item.id}</strong>
+                <span className="chip">{item.priority}</span>
+              </div>
               <p>{item.type}</p>
-              <small>{item.location}</small>
+              <small>{item.place} • {item.createdAt}</small>
             </div>
 
             <span className="admin-case-status">{item.status}</span>
-
-            <div className="admin-case-actions">
-              <button onClick={() => updateCaseStatus(item.id, 'Terverifikasi')}>
-                <CheckCircle2 size={15} /> Verifikasi
-              </button>
-              <button onClick={() => updateCaseStatus(item.id, 'Diproses')}>
-                <ShieldAlert size={15} /> Proses
-              </button>
-              <button onClick={() => updateCaseStatus(item.id, 'Selesai')}>
-                <CheckCircle2 size={15} /> Selesai
-              </button>
-            </div>
           </article>
         ))}
       </div>
+
+      {selectedCase && (
+        <div className="admin-detail-card">
+          <div className="panel-head solid-bottom">
+            <div>
+              <span className="small-caps rose">Detail kasus</span>
+              <h3>{selectedCase.type}</h3>
+            </div>
+            <span className="chip">{selectedCase.status}</span>
+          </div>
+
+          <div className="admin-detail-grid">
+            <div>
+              <strong>Pelapor</strong>
+              <p>{selectedCase.reporterLabel} • {selectedCase.reporterRole}</p>
+            </div>
+            <div>
+              <strong>Lokasi / kanal</strong>
+              <p>{selectedCase.place}</p>
+            </div>
+            <div>
+              <strong>Bukti</strong>
+              <p>{selectedCase.evidenceName || 'Belum ada lampiran'}</p>
+            </div>
+            <div>
+              <strong>Kronologi</strong>
+              <p>{selectedCase.chronology}</p>
+            </div>
+          </div>
+
+          <div className="admin-case-actions admin-actions-wide">
+            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Terverifikasi')}>
+              <CheckCircle2 size={15} /> Verifikasi
+            </button>
+            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Diproses')}>
+              <ShieldAlert size={15} /> Proses
+            </button>
+            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Selesai')}>
+              <CheckCircle2 size={15} /> Selesai
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,6 +1,5 @@
-import { ArrowLeft, KeyRound } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, KeyRound, ShieldCheck } from 'lucide-react'
 import KindReachLogo from '../components/KindReachLogo'
-import { loginAccounts } from '../data/appData.jsx'
 
 function GoogleIcon() {
   return (
@@ -14,6 +13,8 @@ function GoogleIcon() {
 }
 
 export default function LoginScreen({
+  institution,
+  accounts,
   selectedAccount,
   selectedAccountId,
   onSelectAccount,
@@ -33,13 +34,21 @@ export default function LoginScreen({
         <span className="small-caps mint">Log In Pengguna</span>
         <h2>Masuk sebagai pengguna terverifikasi</h2>
         <p>
-          Pilih peran pengguna dan masuk ke ekosistem KindReach dengan akun
-          yang sudah terhubung ke sekolah.
+          Pilih peran untuk mensimulasikan pengalaman siswa, guru BK, atau admin sekolah.
         </p>
       </div>
 
+      <div className="login-verify-card">
+        <div>
+          <span className="small-caps">Sekolah aktif</span>
+          <strong>{institution.name}</strong>
+          <p>{institution.verificationLabel}</p>
+        </div>
+        <span className="chip">{institution.schoolCode}</span>
+      </div>
+
       <div className="role-selector">
-        {loginAccounts.map((account) => (
+        {accounts.map((account) => (
           <button
             key={account.id}
             className={`role-card ${selectedAccountId === account.id ? 'active' : ''}`}
@@ -54,27 +63,28 @@ export default function LoginScreen({
         ))}
       </div>
 
-      <div className="account-preview">
+      <div className="account-preview login-account-preview-strong">
         <div>
           <span className="small-caps">Akun terpilih</span>
           <h3>{selectedAccount.name}</h3>
           <p>{selectedAccount.email}</p>
-          <p>{selectedAccount.school}</p>
+          <p>{selectedAccount.department}</p>
         </div>
         <span className="chip">{selectedAccount.role}</span>
       </div>
 
-      <div className="institution-note" style={{ marginTop: 12 }}>
-        <strong>Kode akses sekolah</strong>
-        <p style={{ marginBottom: 0 }}>
-          <KeyRound size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-          {selectedAccount.schoolCode}
-        </p>
+      <div className="institution-note login-proof-box" style={{ marginTop: 12 }}>
+        <strong>Alur verifikasi prototype</strong>
+        <div className="login-proof-list">
+          <span><ShieldCheck size={14} /> Sekolah terdaftar</span>
+          <span><BadgeCheck size={14} /> Peran pengguna dipilih</span>
+          <span><KeyRound size={14} /> Kode akses: {selectedAccount.schoolCode}</span>
+        </div>
       </div>
 
       <button className="google-auth-btn" onClick={onLogin}>
         <GoogleIcon />
-        <span>Log In sebagai {selectedAccount.name}</span>
+        <span>Masuk sebagai {selectedAccount.role}</span>
       </button>
     </div>
   )
