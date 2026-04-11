@@ -1,0 +1,18 @@
+{
+  "institutions": [
+    {
+      "id": "SCH-001",
+      "name": "SMA Harmoni Nusantara",
+      "code": "HN-2026"
+    }
+  ],
+  "reports": [
+    {
+      "id": "REP-001",
+      "type": "Verbal Bullying",
+      "location": "Grup kelas online",
+      "status": "Menunggu verifikasi",
+      "createdAt": "2026-04-07T10:00:00.000Z"
+    }
+  ]
+}
