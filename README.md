@@ -31,6 +31,38 @@ Yang paling bikin naik ke **9/10** itu bukan ubah warna lagi, tapi beresin:
 **Laman Lapor → KindBot → Admin verification**.
 
 
+===
+# Belum sepenuhnya sesuai
+
+Nah ini bagian yang saya maksud “masih kurang”:
+
+Cyber-Shield masih simulasi
+sekarang cuma cek kata kasar dari daftar kata
+belum benar-benar flow “sebelum pesan dikirim”
+belum ada logika konteks/slang
+KindBot masih UI chat statis
+belum chat interaktif sungguhan
+belum ada alur pendampingan yang dalam
+belum benar-benar terasa sebagai AI listener
+Laman Lapor belum full seperti PDF
+form sudah ada
+tapi masih lokal/state sendiri
+bukti belum benar-benar diproses
+status laporan belum sinkron ke sistem sekolah secara nyata
+SOS masih tampilan darurat
+sudah bagus secara visual
+tapi belum benar-benar ambil lokasi live
+belum benar-benar kirim koordinat
+Kind-Quest belum benar-benar ada gameplay
+sekarang masih lebih mirip daftar progress
+belum ada simulasi pilihan/decision making seperti di PDF
+Admin dashboard belum benar-benar jadi pusat penanganan
+datanya masih dummy/lokal
+belum benar-benar menerima laporan dari user screen
+Verifikasi akses sekolah belum terasa nyata
+secara konsep ada
+tapi dari implementasi frontend, login masih pakai akun preset
+
 ## Jalankan di VS Code
 ```bash
 npm install
