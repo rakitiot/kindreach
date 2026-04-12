@@ -1,46 +1,30 @@
-# KindReach Prototype
-
-Prototipe aplikasi anti-bullying untuk sekolah dengan fokus pada rasa aman, pelaporan anonim, dan tindak lanjut oleh tim sekolah.
-
-Versi ini mempertahankan sebagian besar fitur sebagai demo interaktif, lalu menghidupkan satu flow inti secara semi-realistic:
-
-- User mengirim laporan dari `Laman Lapor`
-- Laporan tersimpan ke server lokal
-- Admin melihat laporan yang sama
-- Admin mengubah status laporan dan perubahan kembali terlihat di sisi user
-
-## Flow utama
-
-Flow `Report -> Admin` sekarang memakai backend lokal di `server/index.js`.
-
-Jika server lokal aktif:
-- daftar laporan di user dan admin diambil dari backend
-- submit laporan membuat data baru di backend
-- update status admin tersinkron ke backend
-
-Jika server lokal belum aktif:
-- aplikasi tetap bisa dibuka
-- frontend otomatis masuk ke mode demo lokal
-- laporan dan perubahan status tetap bisa disimulasikan dalam sesi berjalan
-
 ## Menjalankan proyek
-
 ### Terminal 1 - Frontend
 ```bash
 npm install
 npm run dev
 ```
-
-Frontend berjalan di `http://localhost:5173`.
-
 ### Terminal 2 - Backend lokal
 ```bash
 cd server
 npm install
 npm run dev
-```
 
-Backend laporan berjalan di `http://localhost:4000`.
+```
+## GitHub
+link https://github.com/rakitiot/kindreach.git
+1. git init
+2. git add .
+3. git commit -m "first commit"
+4. git remote add origin https://github.com/rakitiot/kindreach.git
+5. git remote -v
+6. git branch -M main
+7. git push -u origin main
+UPDATE
+1. git add .
+2. git commit -m "update project"
+3. git push
+
 
 ## Cara demo flow semi-realistic
 
