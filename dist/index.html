@@ -12,5 +12,52 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      ;(() => {
+        const shouldLoadTrackedBuild =
+          window.location.hostname.endsWith('github.io') &&
+          Array.from(document.scripts).some(
+            (script) => script.getAttribute('src') === '/src/main.jsx'
+          )
+
+        if (!shouldLoadTrackedBuild) return
+
+        const distBase = new URL('./dist/', window.location.href)
+
+        fetch(new URL('index.html', distBase), { cache: 'no-store' })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Build output was not found.')
+            }
+
+            return response.text()
+          })
+          .then((html) => {
+            const distDocument = new DOMParser().parseFromString(html, 'text/html')
+
+            distDocument
+              .querySelectorAll('link[rel="stylesheet"][href]')
+              .forEach((distLink) => {
+                const link = document.createElement('link')
+                link.rel = 'stylesheet'
+                link.href = new URL(distLink.getAttribute('href'), distBase).href
+                document.head.appendChild(link)
+              })
+
+            distDocument
+              .querySelectorAll('script[type="module"][src]')
+              .forEach((distScript) => {
+                const script = document.createElement('script')
+                script.type = 'module'
+                script.crossOrigin = distScript.crossOrigin || 'anonymous'
+                script.src = new URL(distScript.getAttribute('src'), distBase).href
+                document.body.appendChild(script)
+              })
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      })()
+    </script>
   </body>
 </html>
