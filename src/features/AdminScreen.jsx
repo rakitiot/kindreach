@@ -1,5 +1,5 @@
 import { ArrowLeft, CheckCircle2, Clock3, FileWarning, ShieldAlert, Users } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const FILTERS = ['Semua', 'Menunggu verifikasi', 'Terverifikasi', 'Diproses', 'Selesai']
 
@@ -7,6 +7,8 @@ export default function AdminScreen({
   institution,
   user,
   reports,
+  isReportMutationPending,
+  activeReportId,
   onUpdateReportStatus,
   onBackToApp,
   onLogout,
@@ -19,7 +21,20 @@ export default function AdminScreen({
     return reports.filter((item) => item.status === activeFilter)
   }, [activeFilter, reports])
 
-  const selectedCase = reports.find((item) => item.id === selectedCaseId) || reports[0]
+  useEffect(() => {
+    if (filteredReports.length === 0) {
+      setSelectedCaseId(null)
+      return
+    }
+
+    const hasSelectedCase = filteredReports.some((item) => item.id === selectedCaseId)
+    if (!hasSelectedCase) {
+      setSelectedCaseId(filteredReports[0].id)
+    }
+  }, [filteredReports, selectedCaseId])
+
+  const selectedCase = filteredReports.find((item) => item.id === selectedCaseId) || filteredReports[0] || null
+  const isUpdatingSelectedCase = Boolean(selectedCase) && isReportMutationPending && activeReportId === selectedCase.id
 
   return (
     <div className="phone-page admin-page">
@@ -76,24 +91,31 @@ export default function AdminScreen({
       </div>
 
       <div className="admin-case-list">
-        {filteredReports.map((item) => (
-          <article
-            key={item.id}
-            className={`admin-case-card ${selectedCaseId === item.id ? 'selected' : ''}`}
-            onClick={() => setSelectedCaseId(item.id)}
-          >
-            <div>
-              <div className="admin-case-title-row">
-                <strong>{item.id}</strong>
-                <span className="chip">{item.priority}</span>
+        {filteredReports.length > 0 ? (
+          filteredReports.map((item) => (
+            <article
+              key={item.id}
+              className={`admin-case-card ${selectedCaseId === item.id ? 'selected' : ''}`}
+              onClick={() => setSelectedCaseId(item.id)}
+            >
+              <div>
+                <div className="admin-case-title-row">
+                  <strong>{item.id}</strong>
+                  <span className="chip">{item.priority}</span>
+                </div>
+                <p>{item.type}</p>
+                <small>{item.place} • {item.createdAt}</small>
               </div>
-              <p>{item.type}</p>
-              <small>{item.place} • {item.createdAt}</small>
-            </div>
 
-            <span className="admin-case-status">{item.status}</span>
-          </article>
-        ))}
+              <span className="admin-case-status">{item.status}</span>
+            </article>
+          ))
+        ) : (
+          <div className="empty-state-card">
+            <strong>Belum ada kasus pada filter ini</strong>
+            <p>Begitu laporan baru masuk atau status berubah, daftar admin akan diperbarui di sini.</p>
+          </div>
+        )}
       </div>
 
       {selectedCase && (
@@ -126,13 +148,13 @@ export default function AdminScreen({
           </div>
 
           <div className="admin-case-actions admin-actions-wide">
-            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Terverifikasi')}>
-              <CheckCircle2 size={15} /> Verifikasi
+            <button disabled={isUpdatingSelectedCase} onClick={() => onUpdateReportStatus(selectedCase.id, 'Terverifikasi')}>
+              <CheckCircle2 size={15} /> {isUpdatingSelectedCase ? 'Menyimpan...' : 'Verifikasi'}
             </button>
-            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Diproses')}>
+            <button disabled={isUpdatingSelectedCase} onClick={() => onUpdateReportStatus(selectedCase.id, 'Diproses')}>
               <ShieldAlert size={15} /> Proses
             </button>
-            <button onClick={() => onUpdateReportStatus(selectedCase.id, 'Selesai')}>
+            <button disabled={isUpdatingSelectedCase} onClick={() => onUpdateReportStatus(selectedCase.id, 'Selesai')}>
               <CheckCircle2 size={15} /> Selesai
             </button>
           </div>

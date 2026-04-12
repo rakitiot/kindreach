@@ -26,6 +26,12 @@ import {
 } from '../data/appData.jsx'
 import KindReachLogo from '../components/KindReachLogo'
 
+const shieldExampleDrafts = [
+  'Kamu bodoh banget, kerja kelompok jadi kacau.',
+  'Mending kamu diam saja, ide kamu jelek dan bikin malu.',
+  'Dasar cupu, jangan ikut rapat lagi karena kamu bikin semua orang kesal.',
+]
+
 function createAnimeAvatarSvg(name = 'Resty') {
   const initial = (name?.trim?.()?.charAt(0) || 'R').toUpperCase()
 
@@ -62,11 +68,21 @@ function createAnimeAvatarSvg(name = 'Resty') {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
 }
 
-function createReportId(count) {
-  return `KR-${2400 + count + 1}`
-}
-
 function makeSaferMessage(input) {
+  const normalized = input.trim().toLowerCase()
+
+  if (normalized === 'kamu bodoh banget, kerja kelompok jadi kacau.') {
+    return 'Aku kecewa karena kerja kelompok jadi tidak teratur. Yuk kita rapikan pembagian tugasnya bersama.'
+  }
+
+  if (normalized === 'mending kamu diam saja, ide kamu jelek dan bikin malu.') {
+    return 'Menurutku idenya masih perlu diperjelas. Yuk kita cari versi yang lebih kuat bersama.'
+  }
+
+  if (normalized === 'dasar cupu, jangan ikut rapat lagi karena kamu bikin semua orang kesal.') {
+    return 'Rapat tadi terasa kurang nyaman. Akan lebih baik kalau kita atur giliran bicara dan peran masing-masing dengan lebih jelas.'
+  }
+
   return input
     .replace(/bodoh|tolol|goblok|idiot|bego|cupu|jelek|norak/gi, 'kurang tepat')
     .replace(/banget/gi, '')
@@ -79,7 +95,7 @@ function statusStepClass(status, index) {
   return index <= currentIndex ? 'active' : ''
 }
 
-function HomeTab({ user, reports, onNavigate, onOpenSos }) {
+function HomeTab({ user, reports, onNavigate }) {
   const heroAvatar = user.avatar || createAnimeAvatarSvg(user.name)
   const criticalCount = reports.filter((item) => item.priority === 'Tinggi').length
 
@@ -121,16 +137,6 @@ function HomeTab({ user, reports, onNavigate, onOpenSos }) {
         ))}
       </section>
 
-      <section className="sos-card">
-        <div>
-          <span className="small-caps rose">Emergency</span>
-          <strong>Mode respon cepat sekolah siap diaktifkan</strong>
-        </div>
-        <button onClick={onOpenSos}>
-          <Siren size={16} /> SOS
-        </button>
-      </section>
-
       <section className="panel">
         <div className="panel-head">
           <h3>Quick access</h3>
@@ -162,7 +168,7 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
   const saferMessage = makeSaferMessage(shieldInput)
 
   return (
-    <section className="panel grow">
+    <section className="panel grow shield-panel">
       <div className="panel-head solid-bottom">
         <div>
           <span className="small-caps mint">Preventive Nudging</span>
@@ -175,14 +181,21 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
         </label>
       </div>
 
-      <div className="shield-info-card">
-        <strong>Simulasi sebelum pesan terkirim</strong>
-        <p>Fokus prototipe ini adalah menunjukkan bahwa sistem menahan pesan berisiko lalu memberi nudge dan alternatif kalimat yang lebih aman.</p>
-      </div>
+      <p className="shield-guidance">
+        Ketikkan pesan untuk agent cek Cyber-Shield sebelum dikirim. Kamu juga bisa memakai contoh di bawah untuk melihat bagaimana sistem menyarankan kalimat yang lebih aman.
+      </p>
 
       <div className="shield-chat-shell">
         <div className="shield-message incoming">Resty, tolong kumpulkan tugasmu sebelum jam 2 ya.</div>
         <div className="shield-message outgoing muted">Draf balasan kamu akan dicek Cyber-Shield sebelum dikirim.</div>
+      </div>
+
+      <div className="shield-example-grid">
+        {shieldExampleDrafts.map((example) => (
+          <button key={example} className="shield-example-btn" onClick={() => setShieldInput(example)}>
+            {example}
+          </button>
+        ))}
       </div>
 
       <div className="shield-typing-box">
@@ -215,10 +228,6 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
         </div>
       )}
 
-      <div className="shield-system-note">
-        <strong>Catatan prototype</strong>
-        <p>Tampilan ini sengaja dibuat menyerupai alur keyboard protection agar poin utama PDF lebih kuat saat dipresentasikan.</p>
-      </div>
     </section>
   )
 }
@@ -261,16 +270,18 @@ function KindbotTab({ onNavigate }) {
   )
 }
 
-function ReportTab({ reports, onCreateReport }) {
+function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
   const [form, setForm] = useState({
     reporterRole: 'Saksi',
     incidentType: 'Verbal Bullying',
-    incidentChannel: 'Grup kelas online',
+    incidentPlace: 'Grup kelas online',
     chronology: 'Saya melihat teman saya diejek terus menerus oleh beberapa akun lain di grup kelas.',
     evidenceName: '',
     anonymousMode: true,
     priority: 'Tinggi',
   })
+  const [submitFeedback, setSubmitFeedback] = useState('')
+  const [submitError, setSubmitError] = useState('')
 
   const timelineSteps = ['Menunggu verifikasi', 'Terverifikasi', 'Diproses', 'Selesai']
 
@@ -284,23 +295,27 @@ function ReportTab({ reports, onCreateReport }) {
     updateField('evidenceName', file.name)
   }
 
-  function handleSubmitReport() {
-    const newReport = {
-      id: createReportId(reports.length),
+  async function handleSubmitReport() {
+    if (!form.chronology.trim()) {
+      setSubmitError('Kronologi perlu diisi agar admin sekolah bisa memahami kasusnya.')
+      return
+    }
+
+    setSubmitError('')
+    setSubmitFeedback('')
+
+    const result = await onCreateReport({
       type: form.incidentType,
-      channel: form.incidentChannel,
-      place: form.incidentChannel,
-      status: 'Menunggu verifikasi',
+      place: form.incidentPlace,
       priority: form.priority,
       reporterRole: form.reporterRole,
       reporterLabel: form.anonymousMode ? 'Anonim' : 'Pelapor dikenali sekolah',
       chronology: form.chronology,
       evidenceName: form.evidenceName,
       anonymousMode: form.anonymousMode,
-      createdAt: 'Hari ini • 09:41',
-    }
+    })
 
-    onCreateReport(newReport)
+    setSubmitFeedback(result.message)
 
     setForm((prev) => ({
       ...prev,
@@ -345,7 +360,7 @@ function ReportTab({ reports, onCreateReport }) {
 
         <label>
           Lokasi / kanal kejadian
-          <input value={form.incidentChannel} onChange={(e) => updateField('incidentChannel', e.target.value)} />
+          <input value={form.incidentPlace} onChange={(e) => updateField('incidentPlace', e.target.value)} />
         </label>
 
         <label>
@@ -371,7 +386,12 @@ function ReportTab({ reports, onCreateReport }) {
           <span>Sembunyikan identitas saya dari siswa lain</span>
         </label>
 
-        <button className="submit-demo" onClick={handleSubmitReport}>Kirim laporan aman</button>
+        {submitError && <div className="report-inline-feedback error">{submitError}</div>}
+        {submitFeedback && <div className="report-inline-feedback success">{submitFeedback}</div>}
+
+        <button className="submit-demo" onClick={handleSubmitReport} disabled={isSubmittingReport}>
+          {isSubmittingReport ? 'Mengirim laporan...' : 'Kirim laporan aman'}
+        </button>
       </div>
 
       <div className="report-timeline-wrap">
@@ -384,23 +404,30 @@ function ReportTab({ reports, onCreateReport }) {
       </div>
 
       <div className="report-status-list">
-        {reports.slice(0, 3).map((item) => (
-          <article key={item.id} className="report-card report-card-stack">
-            <div>
-              <div className="admin-case-title-row">
-                <strong>{item.id}</strong>
-                <span className="chip">{item.priority}</span>
+        {reports.length > 0 ? (
+          reports.slice(0, 3).map((item) => (
+            <article key={item.id} className="report-card report-card-stack">
+              <div>
+                <div className="admin-case-title-row">
+                  <strong>{item.id}</strong>
+                  <span className="chip">{item.priority}</span>
+                </div>
+                <p>{item.type} • {item.place}</p>
+                <small>{item.reporterLabel} • {item.createdAt}</small>
               </div>
-              <p>{item.type} • {item.place}</p>
-              <small>{item.reporterLabel} • {item.createdAt}</small>
-            </div>
-            <div className="report-step-status-row">
-              {timelineSteps.map((step, index) => (
-                <span key={step} className={`report-mini-step ${statusStepClass(item.status, index)}`}>{step}</span>
-              ))}
-            </div>
-          </article>
-        ))}
+              <div className="report-step-status-row">
+                {timelineSteps.map((step, index) => (
+                  <span key={step} className={`report-mini-step ${statusStepClass(item.status, index)}`}>{step}</span>
+                ))}
+              </div>
+            </article>
+          ))
+        ) : (
+          <div className="empty-state-card">
+            <strong>Belum ada laporan masuk</strong>
+            <p>Laporan baru dari user akan langsung muncul di sini begitu tersimpan.</p>
+          </div>
+        )}
       </div>
     </section>
   )
@@ -562,7 +589,17 @@ function SosScreen({ onClose }) {
   )
 }
 
-export default function AppScreen({ institution, user, activeTab, onTabChange, onCreateReport, onResolveQuest, reports, onLogout }) {
+export default function AppScreen({
+  institution,
+  user,
+  activeTab,
+  onTabChange,
+  onCreateReport,
+  onResolveQuest,
+  reports,
+  isReportMutationPending,
+  onLogout,
+}) {
   const [showSosScreen, setShowSosScreen] = useState(false)
   const [shieldEnabled, setShieldEnabled] = useState(true)
   const [shieldInput, setShieldInput] = useState('')
@@ -593,12 +630,17 @@ export default function AppScreen({ institution, user, activeTab, onTabChange, o
       </header>
 
       <main className="app-content">
-        {activeTab === 'home' && <HomeTab user={user} reports={reports} onNavigate={onTabChange} onOpenSos={() => setShowSosScreen(true)} />}
+        {activeTab === 'home' && <HomeTab user={user} reports={reports} onNavigate={onTabChange} />}
         {activeTab === 'shield' && <ShieldTab shieldEnabled={shieldEnabled} setShieldEnabled={setShieldEnabled} shieldInput={shieldInput} setShieldInput={setShieldInput} detectedWords={detectedWords} />}
         {activeTab === 'kindbot' && <KindbotTab onNavigate={onTabChange} />}
-        {activeTab === 'report' && <ReportTab reports={reports} onCreateReport={onCreateReport} />}
+        {activeTab === 'report' && <ReportTab reports={reports} onCreateReport={onCreateReport} isSubmittingReport={isReportMutationPending} />}
         {activeTab === 'profile' && <ProfileTab user={user} onResolveQuest={onResolveQuest} />}
       </main>
+
+      <button className="sos-floating-bubble" onClick={() => setShowSosScreen(true)}>
+        <Siren size={18} />
+        <span>SOS</span>
+      </button>
 
       <nav className="bottom-tabbar">
         {bottomTabs.map((tab) => {

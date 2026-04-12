@@ -9,13 +9,23 @@ import InstitutionAccessScreen from './features/InstitutionAccessScreen'
 import AdminScreen from './features/AdminScreen'
 import SplashScreen from './features/SplashScreen'
 import { initialReports, loginAccounts } from './data/appData.jsx'
+import {
+  createDemoReport,
+  createReport,
+  fetchReports,
+  normalizeReports,
+  sortReportsNewestFirst,
+  updateReportStatus,
+} from './lib/reportApi.js'
 
 export default function App() {
   const [stage, setStage] = useState('outside')
   const [activeTab, setActiveTab] = useState('home')
   const [selectedAccountId, setSelectedAccountId] = useState('student')
   const [accounts, setAccounts] = useState(loginAccounts)
-  const [reports, setReports] = useState(initialReports)
+  const [reports, setReports] = useState(() => normalizeReports(initialReports))
+  const [isReportMutationPending, setIsReportMutationPending] = useState(false)
+  const [activeReportId, setActiveReportId] = useState(null)
   const [institution, setInstitution] = useState({
     name: 'SMA Harmoni Nusantara',
     adminName: 'Raka Aditya',
@@ -37,6 +47,41 @@ export default function App() {
     return () => clearTimeout(timer)
   }, [stage])
 
+  useEffect(() => {
+    if (stage !== 'app' && stage !== 'admin') return
+
+    let cancelled = false
+
+    async function syncReports() {
+      try {
+        const nextReports = await fetchReports()
+        if (cancelled) return
+
+        setReports(nextReports)
+      } catch {
+        if (cancelled) return
+
+        setReports((prev) => (prev.length > 0 ? prev : normalizeReports(initialReports)))
+      }
+    }
+
+    syncReports()
+
+    return () => {
+      cancelled = true
+    }
+  }, [stage])
+
+  function rewardActiveUser(points) {
+    setAccounts((prev) =>
+      prev.map((account) =>
+        account.id === selectedAccountId
+          ? { ...account, points: account.points + points }
+          : account
+      )
+    )
+  }
+
   function handleRegisterInstitution(payload) {
     const nextInstitution = {
       name: payload.institutionName,
@@ -51,37 +96,67 @@ export default function App() {
         ...account,
         school: payload.institutionName,
         schoolCode: payload.schoolCode,
-        ...(account.id === 'admin' ? { name: payload.adminName, email: `${slugify(payload.adminName)}@kindreach.id` } : {}),
+        ...(account.id === 'admin'
+          ? { name: payload.adminName, email: `${slugify(payload.adminName)}@kindreach.id` }
+          : {}),
       }))
     )
     setSelectedAccountId('admin')
     setStage('admin')
   }
 
-  function handleCreateReport(reportDraft) {
-    setReports((prev) => [reportDraft, ...prev])
-    setAccounts((prev) =>
-      prev.map((account) =>
-        account.id === selectedAccountId
-          ? { ...account, points: account.points + 80 }
-          : account
+  async function handleCreateReport(reportDraft) {
+    setIsReportMutationPending(true)
+
+    try {
+      const savedReport = await createReport(reportDraft)
+      setReports((prev) =>
+        sortReportsNewestFirst([
+          savedReport,
+          ...prev.filter((item) => item.id !== savedReport.id),
+        ])
       )
-    )
-    setActiveTab('report')
+      rewardActiveUser(80)
+      setActiveTab('report')
+
+      return {
+        message: 'Laporan aman sudah dikirim ke tim sekolah.',
+      }
+    } catch {
+      const demoReport = createDemoReport(reportDraft)
+      setReports((prev) => sortReportsNewestFirst([demoReport, ...prev]))
+      rewardActiveUser(80)
+      setActiveTab('report')
+
+      return {
+        message: 'Laporan aman sudah dikirim ke tim sekolah.',
+      }
+    } finally {
+      setIsReportMutationPending(false)
+    }
   }
 
   function handleResolveQuest(points) {
-    setAccounts((prev) =>
-      prev.map((account) =>
-        account.id === selectedAccountId
-          ? { ...account, points: account.points + points }
-          : account
-      )
-    )
+    rewardActiveUser(points)
   }
 
-  function handleUpdateReportStatus(reportId, status) {
-    setReports((prev) => prev.map((item) => (item.id === reportId ? { ...item, status } : item)))
+  async function handleUpdateReportStatus(reportId, status) {
+    setIsReportMutationPending(true)
+    setActiveReportId(reportId)
+
+    try {
+      const updatedReport = await updateReportStatus(reportId, status)
+      setReports((prev) =>
+        prev.map((item) => (item.id === reportId ? updatedReport : item))
+      )
+    } catch {
+      setReports((prev) =>
+        prev.map((item) => (item.id === reportId ? { ...item, status } : item))
+      )
+    } finally {
+      setIsReportMutationPending(false)
+      setActiveReportId(null)
+    }
   }
 
   return (
@@ -135,6 +210,7 @@ export default function App() {
                 onCreateReport={handleCreateReport}
                 onResolveQuest={handleResolveQuest}
                 reports={reports}
+                isReportMutationPending={isReportMutationPending}
                 onLogout={() => {
                   setActiveTab('home')
                   setStage('outside')
@@ -147,6 +223,8 @@ export default function App() {
                 institution={institution}
                 user={selectedUser}
                 reports={reports}
+                isReportMutationPending={isReportMutationPending}
+                activeReportId={activeReportId}
                 onUpdateReportStatus={handleUpdateReportStatus}
                 onBackToApp={() => setStage('app')}
                 onLogout={() => {

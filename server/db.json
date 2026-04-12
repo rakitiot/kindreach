@@ -8,11 +8,43 @@
   ],
   "reports": [
     {
-      "id": "REP-001",
-      "type": "Verbal Bullying",
-      "location": "Grup kelas online",
+      "id": "REP-2403",
+      "type": "Cyberbullying",
+      "place": "DM media sosial",
       "status": "Menunggu verifikasi",
-      "createdAt": "2026-04-07T10:00:00.000Z"
+      "priority": "Tinggi",
+      "reporterRole": "Saksi",
+      "reporterLabel": "Anonim",
+      "chronology": "Pesan menghina dikirim ke siswa kelas X secara personal sejak tiga hari terakhir.",
+      "evidenceName": "chat-dm-3hari.jpg",
+      "anonymousMode": true,
+      "createdAt": "2026-04-10T08:05:00.000Z"
+    },
+    {
+      "id": "REP-2402",
+      "type": "Intimidasi",
+      "place": "Koridor sekolah",
+      "status": "Terverifikasi",
+      "priority": "Sedang",
+      "reporterRole": "Korban",
+      "reporterLabel": "Anonim",
+      "chronology": "Ada ancaman verbal saat jam istirahat di koridor lantai 2.",
+      "evidenceName": "catatan-kronologi.pdf",
+      "anonymousMode": true,
+      "createdAt": "2026-04-09T13:40:00.000Z"
+    },
+    {
+      "id": "REP-2401",
+      "type": "Verbal Bullying",
+      "place": "Grup kelas online",
+      "status": "Diproses",
+      "priority": "Tinggi",
+      "reporterRole": "Saksi",
+      "reporterLabel": "Anonim",
+      "chronology": "Teman saya diejek berulang kali di grup kelas dengan kata-kata menjatuhkan.",
+      "evidenceName": "screenshot-grup-kelas.png",
+      "anonymousMode": true,
+      "createdAt": "2026-04-08T10:15:00.000Z"
     }
   ]
 }

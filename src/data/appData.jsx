@@ -132,7 +132,6 @@ export const initialReports = [
   {
     id: 'KR-2401',
     type: 'Verbal Bullying',
-    channel: 'Grup kelas online',
     place: 'Grup kelas online',
     status: 'Diproses',
     priority: 'Tinggi',
@@ -141,12 +140,11 @@ export const initialReports = [
     chronology: 'Teman saya diejek berulang kali di grup kelas dengan kata-kata menjatuhkan.',
     evidenceName: 'screenshot-grup-kelas.png',
     anonymousMode: true,
-    createdAt: '08 Apr • 10:15',
+    createdAt: '2026-04-08T10:15:00.000Z',
   },
   {
     id: 'KR-2402',
     type: 'Intimidasi',
-    channel: 'Koridor sekolah',
     place: 'Koridor sekolah',
     status: 'Terverifikasi',
     priority: 'Sedang',
@@ -155,12 +153,11 @@ export const initialReports = [
     chronology: 'Ada ancaman verbal saat jam istirahat di koridor lantai 2.',
     evidenceName: 'catatan-kronologi.pdf',
     anonymousMode: true,
-    createdAt: '09 Apr • 13:40',
+    createdAt: '2026-04-09T13:40:00.000Z',
   },
   {
     id: 'KR-2403',
     type: 'Cyberbullying',
-    channel: 'DM media sosial',
     place: 'DM media sosial',
     status: 'Menunggu verifikasi',
     priority: 'Tinggi',
@@ -169,7 +166,7 @@ export const initialReports = [
     chronology: 'Pesan menghina dikirim ke siswa kelas X secara personal sejak tiga hari terakhir.',
     evidenceName: 'chat-dm-3hari.jpg',
     anonymousMode: true,
-    createdAt: '10 Apr • 08:05',
+    createdAt: '2026-04-10T08:05:00.000Z',
   },
 ]
 

@@ -10,7 +10,11 @@ export default function WelcomeScreen({ onOpenInstitution, onOpenLogin }) {
 
         <span className="small-caps mint welcome-kicker">Kindness Warrior</span>
 
-        <h2 className="welcome-main-title">Selamat datang di ekosistem KindReach</h2>
+        <h2 className="welcome-main-title">
+          Selamat datang di
+          <br />
+          ekosistem KindReach
+        </h2>
 
         <p className="welcome-lead">
           KindReach menghadirkan ruang aman digital untuk pencegahan, pelaporan,

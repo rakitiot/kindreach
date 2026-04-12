@@ -1,21 +1,23 @@
 import StatusBar from './StatusBar'
 
-export default function PhoneFrame({ children, fullScreen = false }) {
+export default function PhoneFrame({ children }) {
   return (
-    <div className={`phone-stage ${fullScreen ? 'fullscreen' : ''}`}>
-      <div className={`phone-frame ${fullScreen ? 'fullscreen' : ''}`}>
-        {!fullScreen && (
-          <>
-            <div className="side-button side-top" />
-            <div className="side-button side-middle" />
-            <div className="side-button side-bottom" />
-            <div className="phone-notch" />
-          </>
-        )}
+    <div className="phone-stage">
+      <div className="phone-frame iphone-bezel">
+        <span className="side-button side-top" />
+        <span className="side-button side-middle" />
+        <span className="side-button side-bottom" />
 
-        <div className={`phone-screen ${fullScreen ? 'fullscreen' : ''}`}>
+        <div className="phone-screen">
+          <div className="phone-wallpaper" />
+          <div className="phone-glass-overlay" />
+          <div className="dynamic-island" />
           <StatusBar />
-          {children}
+
+          <div className="phone-content">
+            {children}
+          </div>
+
           <div className="home-indicator" />
         </div>
       </div>
