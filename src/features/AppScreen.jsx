@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
-  Bell,
+  ArrowLeft,
   Bot,
   CheckCircle2,
-  ChevronRight,
   FileWarning,
   HeartHandshake,
-  LogOut,
   MapPin,
+  Mic,
+  Send,
   ShieldAlert,
   Siren,
   Sparkles,
@@ -17,8 +17,6 @@ import {
   bottomTabs,
   featureCards,
   kindbotPlaybook,
-  missionCards,
-  priorityOptions,
   questScenarios,
   reportPresets,
   responderTeam,
@@ -26,10 +24,103 @@ import {
 } from '../data/appData.jsx'
 import KindReachLogo from '../components/KindReachLogo'
 
+const TAB_TRANSITION_MS = 280
+
 const shieldExampleDrafts = [
   'Kamu bodoh banget, kerja kelompok jadi kacau.',
   'Mending kamu diam saja, ide kamu jelek dan bikin malu.',
   'Dasar cupu, jangan ikut rapat lagi karena kamu bikin semua orang kesal.',
+]
+
+const reportLocationOptions = [
+  'Ruang kelas',
+  'Koridor sekolah',
+  'Kantin',
+  'Lapangan sekolah',
+  'Grup kelas online',
+  'Media sosial',
+]
+
+const reportChronologyDraft = 'Saya melihat teman saya mendapat perlakuan tidak nyaman secara berulang. Kejadian terjadi saat kegiatan sekolah dan saya ingin tim sekolah membantu menindaklanjuti dengan aman.'
+
+const pointWeekOptions = [
+  {
+    key: 'this-week',
+    label: 'Minggu ini',
+    range: '12-18 Apr',
+    items: [
+      { day: 'Sun', points: 80 },
+      { day: 'Mon', points: 82 },
+      { day: 'Tue', points: 68 },
+      { day: 'Wed', points: null },
+      { day: 'Thu', points: null },
+      { day: 'Fri', points: null },
+      { day: 'Sat', points: null },
+    ],
+  },
+  {
+    key: 'last-week',
+    label: 'Minggu lalu',
+    range: '5-11 Apr',
+    items: [
+      { day: 'Sun', points: 72 },
+      { day: 'Mon', points: 94 },
+      { day: 'Tue', points: 66 },
+      { day: 'Wed', points: 58 },
+      { day: 'Thu', points: 118, tag: 'Baik' },
+      { day: 'Fri', points: 34, tag: 'Buruk' },
+      { day: 'Sat', points: 106 },
+    ],
+  },
+  {
+    key: 'two-weeks-ago',
+    label: '2 minggu lalu',
+    range: '29 Mar-4 Apr',
+    items: [
+      { day: 'Sun', points: 68 },
+      { day: 'Mon', points: 76 },
+      { day: 'Tue', points: 84 },
+      { day: 'Wed', points: 42, tag: 'Buruk' },
+      { day: 'Thu', points: 96 },
+      { day: 'Fri', points: 112, tag: 'Baik' },
+      { day: 'Sat', points: 90 },
+    ],
+  },
+]
+
+const questMapNodes = [
+  {
+    id: 'map-1',
+    title: 'Cek Empati',
+    meta: '+60 pts',
+    status: 'Selesai',
+    state: 'done',
+    detail: 'Kamu berhasil memilih respons yang menenangkan dan tidak menyudutkan teman.',
+  },
+  {
+    id: 'map-2',
+    title: 'Balasan Aman',
+    meta: '+90 pts',
+    status: 'Selesai',
+    state: 'done',
+    detail: 'Kamu sudah melatih cara mengubah pesan kasar menjadi kalimat yang lebih aman.',
+  },
+  {
+    id: 'map-3',
+    title: 'Bantu Laporan',
+    meta: '+120 pts',
+    status: 'Aktif',
+    state: 'active',
+    detail: 'Bantu teman menyusun kronologi yang jelas tanpa membuka identitas ke siswa lain.',
+  },
+  {
+    id: 'map-4',
+    title: 'Lencana Teman Digital',
+    meta: '+140 pts',
+    status: 'Terkunci',
+    state: 'locked',
+    detail: 'Lencana ini terbuka setelah kamu menyelesaikan satu tantangan aktif berikutnya.',
+  },
 ]
 
 function createAnimeAvatarSvg(name = 'Resty') {
@@ -95,9 +186,59 @@ function statusStepClass(status, index) {
   return index <= currentIndex ? 'active' : ''
 }
 
-function HomeTab({ user, reports, onNavigate }) {
+const featureIconMap = {
+  cyber: ShieldAlert,
+  kindbot: Bot,
+  report: FileWarning,
+  quest: Trophy,
+}
+
+function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel = 'Peta perjalanan Kind-Quest' }) {
+  return (
+    <div className={`quest-map-trail ${className}`.trim()} aria-label={ariaLabel}>
+      <svg className="quest-trail-svg" viewBox="0 0 320 430" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="questRoadGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#7f8c90" />
+            <stop offset="48%" stopColor="#59676c" />
+            <stop offset="100%" stopColor="#354146" />
+          </linearGradient>
+        </defs>
+        <path className="quest-trail-depth" d="M214 442 C184 374 64 374 54 306 C44 236 244 278 252 200 C260 130 100 154 122 96 C136 58 168 50 178 22" />
+        <path className="quest-trail-outline" d="M214 442 C184 374 64 374 54 306 C44 236 244 278 252 200 C260 130 100 154 122 96 C136 58 168 50 178 22" />
+        <path className="quest-trail-base" d="M214 442 C184 374 64 374 54 306 C44 236 244 278 252 200 C260 130 100 154 122 96 C136 58 168 50 178 22" />
+        <path className="quest-trail-highlight" d="M214 442 C184 374 64 374 54 306 C44 236 244 278 252 200 C260 130 100 154 122 96 C136 58 168 50 178 22" />
+        <path className="quest-trail-glow" d="M214 442 C184 374 64 374 54 306 C44 236 244 278 252 200 C260 130 100 154 122 96 C136 58 168 50 178 22" />
+        <g className="quest-finish-flag">
+          <line x1="178" y1="22" x2="178" y2="-18" />
+          <path d="M178 -16 C196 -24 216 -18 226 -10 C220 2 198 -4 178 4 Z" />
+          <circle cx="178" cy="22" r="6" />
+        </g>
+      </svg>
+      {nodes.map((node, index) => (
+        <button
+          key={node.id}
+          type="button"
+          className={`quest-map-node trail-node quest-node-${index + 1} ${node.state} ${node.id === selectedId ? 'selected' : ''}`}
+          onClick={() => onSelect?.(node.id)}
+          aria-label={`${node.title} - ${node.status}`}
+        >
+          <div className="quest-map-marker">
+            <span className="quest-map-dot" aria-hidden="true" />
+          </div>
+          <div className="quest-map-copy">
+            <strong>{node.title}</strong>
+            <p>{node.status} - {node.meta}</p>
+          </div>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function HomeTab({ user }) {
   const heroAvatar = user.avatar || createAnimeAvatarSvg(user.name)
-  const criticalCount = reports.filter((item) => item.priority === 'Tinggi').length
+  const firstName = user.name.split(' ')[0]
 
   return (
     <>
@@ -111,53 +252,30 @@ function HomeTab({ user, reports, onNavigate }) {
             </div>
 
             <div>
-              <h2>Halo, {user.name.split(' ')[0]} 👋</h2>
-              <p>{user.focus}</p>
+              <h2>Halo, {firstName}</h2>
+              <p>Kindness Warrior - XI IPS 2</p>
             </div>
           </div>
         </div>
-
-        <div className="home-insight-grid">
-          <div className="point-badge">
-            <Sparkles size={15} /> {user.points} pts
-          </div>
-          <div className="point-badge ghost">
-            <Bell size={15} /> {criticalCount} prioritas tinggi
-          </div>
-        </div>
       </section>
 
-      <section className="feature-card-grid">
-        {featureCards.map((item) => (
-          <article key={item.key} className={`feature-demo-card ${item.color}`}>
-            <span>{item.status}</span>
-            <strong>{item.title}</strong>
-            <p>{item.text}</p>
-          </article>
-        ))}
-      </section>
+      <section className="feature-card-grid home-feature-grid">
+        {featureCards.map((item) => {
+          const FeatureIcon = featureIconMap[item.key] || Sparkles
 
-      <section className="panel">
-        <div className="panel-head">
-          <h3>Quick access</h3>
-          <button onClick={() => onNavigate('report')}>
-            Buka <ChevronRight size={15} />
-          </button>
-        </div>
-        <div className="quick-access-row">
-          <button className="mini-action" onClick={() => onNavigate('shield')}>
-            <ShieldAlert size={16} /> Shield
-          </button>
-          <button className="mini-action" onClick={() => onNavigate('kindbot')}>
-            <Bot size={16} /> KindBot
-          </button>
-          <button className="mini-action" onClick={() => onNavigate('report')}>
-            <FileWarning size={16} /> Lapor
-          </button>
-          <button className="mini-action" onClick={() => onNavigate('profile')}>
-            <Trophy size={16} /> Quest
-          </button>
-        </div>
+          return (
+            <article key={item.key} className={`feature-demo-card ${item.color}`}>
+              <div className="feature-card-top">
+                <span>{item.status}</span>
+                <div className="feature-icon-badge">
+                  <FeatureIcon size={15} />
+                </div>
+              </div>
+              <strong>{item.title}</strong>
+              <p>{item.text}</p>
+            </article>
+          )
+        })}
       </section>
     </>
   )
@@ -168,34 +286,29 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
   const saferMessage = makeSaferMessage(shieldInput)
 
   return (
-    <section className="panel grow shield-panel">
-      <div className="panel-head solid-bottom">
-        <div>
-          <span className="small-caps mint">Preventive Nudging</span>
-          <h3>Cyber-Shield Keyboard</h3>
+    <section className="shield-flow-panel">
+      <div className="shield-intro-card">
+        <div className="panel-head solid-bottom">
+          <div>
+            <span className="small-caps mint">Preventive Nudging</span>
+            <h3>Cyber-Shield Keyboard</h3>
+          </div>
+
+          <label className={`shield-toggle ${shieldEnabled ? 'is-on' : ''}`}>
+            <input
+              type="checkbox"
+              checked={shieldEnabled}
+              onChange={(e) => setShieldEnabled(e.target.checked)}
+              aria-label="Aktifkan Cyber-Shield"
+            />
+            <span className="shield-toggle-track"><span className="shield-toggle-thumb" /></span>
+            <span className="shield-toggle-label">{shieldEnabled ? 'Aktif' : 'Nonaktif'}</span>
+          </label>
         </div>
 
-        <label className="shield-toggle">
-          <input type="checkbox" checked={shieldEnabled} onChange={(e) => setShieldEnabled(e.target.checked)} />
-          <span>{shieldEnabled ? 'ON' : 'OFF'}</span>
-        </label>
-      </div>
-
-      <p className="shield-guidance">
-        Ketikkan pesan untuk agent cek Cyber-Shield sebelum dikirim. Kamu juga bisa memakai contoh di bawah untuk melihat bagaimana sistem menyarankan kalimat yang lebih aman.
-      </p>
-
-      <div className="shield-chat-shell">
-        <div className="shield-message incoming">Resty, tolong kumpulkan tugasmu sebelum jam 2 ya.</div>
-        <div className="shield-message outgoing muted">Draf balasan kamu akan dicek Cyber-Shield sebelum dikirim.</div>
-      </div>
-
-      <div className="shield-example-grid">
-        {shieldExampleDrafts.map((example) => (
-          <button key={example} className="shield-example-btn" onClick={() => setShieldInput(example)}>
-            {example}
-          </button>
-        ))}
+        <p className="shield-guidance">
+          Jika Cyber-Shield aktif, pesan yang mengandung kata kasar, kurang pantas, atau mengarah ke bullying akan diberi peringatan sebelum dikirim.
+        </p>
       </div>
 
       <div className="shield-typing-box">
@@ -206,6 +319,17 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
           onChange={(e) => setShieldInput(e.target.value)}
           placeholder="Contoh: kamu bodoh banget, kerja kelompok jadi kacau"
         />
+      </div>
+
+      <div className="shield-example-block">
+        <span className="small-caps">Coba contoh kalimat</span>
+        <div className="shield-example-grid">
+          {shieldExampleDrafts.map((example) => (
+            <button key={example} className="shield-example-btn" onClick={() => setShieldInput(example)}>
+              {example}
+            </button>
+          ))}
+        </div>
       </div>
 
       {hasWarning ? (
@@ -232,23 +356,63 @@ function ShieldTab({ shieldEnabled, setShieldEnabled, shieldInput, setShieldInpu
   )
 }
 
-function KindbotTab({ onNavigate }) {
+function KindbotTab() {
   const [messages, setMessages] = useState(kindbotPlaybook.opening)
+  const chatListRef = useRef(null)
 
-  function runFlow(flowKey) {
-    setMessages([...kindbotPlaybook.opening, ...kindbotPlaybook.flows[flowKey]])
+  useEffect(() => {
+    const chatList = chatListRef.current
+
+    if (!chatList) {
+      return
+    }
+
+    chatList.scrollTo({
+      top: chatList.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [messages])
+
+  function continueConversation() {
+    const autoFlow = [
+      ...kindbotPlaybook.flows.ditemani,
+      ...kindbotPlaybook.flows.laporan,
+    ]
+    const nextMessage = autoFlow[messages.length - kindbotPlaybook.opening.length]
+
+    if (!nextMessage) {
+      return
+    }
+
+    setMessages((prev) => [...prev, nextMessage])
+  }
+
+  function handleConversationKeyDown(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    event.preventDefault()
+    continueConversation()
   }
 
   return (
-    <section className="panel grow">
-      <div className="panel-head solid-bottom">
+    <section
+      className="kindbot-flow-panel"
+      onClick={continueConversation}
+      onKeyDown={handleConversationKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label="Ketuk area chat untuk melanjutkan percakapan KindBot"
+    >
+      <div className="kindbot-inline-head">
         <div>
           <span className="small-caps mint">AI Companion</span>
           <h3>KindBot Chat</h3>
         </div>
       </div>
 
-      <div className="chat-list chat-list-grow">
+      <div className="chat-list chat-list-grow" ref={chatListRef}>
         {messages.map((msg, idx) => (
           <div key={`${msg.from}-${idx}`} className={`chat-bubble ${msg.from}`}>
             {msg.text}
@@ -256,29 +420,27 @@ function KindbotTab({ onNavigate }) {
         ))}
       </div>
 
-      <div className="kindbot-chip-row">
-        <button className="mini-action" onClick={() => runFlow('ditemani')}>Temani aku dulu</button>
-        <button className="mini-action" onClick={() => runFlow('laporan')}>Bantu susun laporan</button>
-        <button className="mini-action" onClick={() => runFlow('dukungTeman')}>Aku ingin bantu teman</button>
+      <div className="kindbot-fake-input" aria-hidden="true">
+        <Mic size={18} className="kindbot-input-icon" aria-hidden="true" />
+        <span className="kindbot-caret" />
+        <span className="kindbot-input-spacer" />
+        <span className="kindbot-send-chip">
+          <Send size={17} aria-hidden="true" />
+        </span>
       </div>
 
-      <div className="chat-actions">
-        <button className="chat-cta primary" onClick={() => onNavigate('report')}>Buka Laman Lapor</button>
-        <button className="chat-cta">Hubungi guru BK</button>
-      </div>
     </section>
   )
 }
 
 function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
   const [form, setForm] = useState({
-    reporterRole: 'Saksi',
-    incidentType: 'Verbal Bullying',
-    incidentPlace: 'Grup kelas online',
-    chronology: 'Saya melihat teman saya diejek terus menerus oleh beberapa akun lain di grup kelas.',
+    reporterRole: '',
+    incidentType: '',
+    incidentPlace: '',
+    chronology: '',
     evidenceName: '',
     anonymousMode: true,
-    priority: 'Tinggi',
   })
   const [submitFeedback, setSubmitFeedback] = useState('')
   const [submitError, setSubmitError] = useState('')
@@ -295,9 +457,17 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
     updateField('evidenceName', file.name)
   }
 
+  function fillChronologyDraft() {
+    if (form.chronology.trim()) {
+      return
+    }
+
+    updateField('chronology', reportChronologyDraft)
+  }
+
   async function handleSubmitReport() {
-    if (!form.chronology.trim()) {
-      setSubmitError('Kronologi perlu diisi agar admin sekolah bisa memahami kasusnya.')
+    if (!form.reporterRole || !form.incidentType || !form.incidentPlace || !form.chronology.trim()) {
+      setSubmitError('Lengkapi peran, jenis kejadian, lokasi, dan kronologi terlebih dahulu.')
       return
     }
 
@@ -307,7 +477,7 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
     const result = await onCreateReport({
       type: form.incidentType,
       place: form.incidentPlace,
-      priority: form.priority,
+      priority: 'Sedang',
       reporterRole: form.reporterRole,
       reporterLabel: form.anonymousMode ? 'Anonim' : 'Pelapor dikenali sekolah',
       chronology: form.chronology,
@@ -319,60 +489,68 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
 
     setForm((prev) => ({
       ...prev,
+      reporterRole: '',
+      incidentType: '',
+      incidentPlace: '',
       chronology: '',
       evidenceName: '',
       anonymousMode: true,
-      priority: 'Tinggi',
     }))
   }
 
   return (
-    <section className="panel grow">
-      <div className="panel-head solid-bottom">
-        <div>
-          <span className="small-caps rose">Anonymous Reporting</span>
-          <h3>Laman Lapor</h3>
+    <section className="report-flow-panel">
+      <div className="report-intro-card">
+        <div className="panel-head solid-bottom">
+          <div>
+            <span className="small-caps rose">Anonymous Reporting</span>
+            <h3>Laman Lapor</h3>
+          </div>
+          <span className="chip">Protected</span>
         </div>
-        <span className="chip">Protected</span>
+
+        <div className="report-security-card">
+          <strong>Anonim, aman, dan langsung ke tim sekolah</strong>
+          <p>Pelapor bisa menyampaikan kronologi, lokasi, dan bukti pendukung dengan identitas yang tetap terlindungi.</p>
+        </div>
       </div>
 
-      <div className="report-security-card">
-        <strong>Anonim, aman, dan langsung ke tim sekolah</strong>
-        <p>Untuk prototype, fokus utama yang ditonjolkan adalah rasa aman pelapor, bukti, kronologi, dan alur verifikasi sekolah.</p>
-      </div>
-
-      <div className="report-form">
+      <div className="report-form report-form-card">
         <label>
           Saya melapor sebagai
           <select value={form.reporterRole} onChange={(e) => updateField('reporterRole', e.target.value)}>
-            <option>Saksi</option>
-            <option>Korban</option>
-            <option>Teman dekat korban</option>
+            <option value="" disabled>Pilih peran</option>
+            <option value="Saksi">Saksi</option>
+            <option value="Korban">Korban</option>
+            <option value="Teman dekat korban">Teman dekat korban</option>
           </select>
         </label>
 
         <label>
           Jenis kejadian
           <select value={form.incidentType} onChange={(e) => updateField('incidentType', e.target.value)}>
-            {reportPresets.map((option) => <option key={option}>{option}</option>)}
+            <option value="" disabled>Pilih jenis kejadian</option>
+            {reportPresets.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
         </label>
 
         <label>
-          Lokasi / kanal kejadian
-          <input value={form.incidentPlace} onChange={(e) => updateField('incidentPlace', e.target.value)} />
-        </label>
-
-        <label>
-          Tingkat urgensi
-          <select value={form.priority} onChange={(e) => updateField('priority', e.target.value)}>
-            {priorityOptions.map((option) => <option key={option}>{option}</option>)}
+          Lokasi
+          <select value={form.incidentPlace} onChange={(e) => updateField('incidentPlace', e.target.value)}>
+            <option value="" disabled>Pilih lokasi</option>
+            {reportLocationOptions.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
         </label>
 
         <label>
           Kronologi
-          <textarea value={form.chronology} onChange={(e) => updateField('chronology', e.target.value)} />
+          <textarea
+            value={form.chronology}
+            onChange={(e) => updateField('chronology', e.target.value)}
+            onFocus={fillChronologyDraft}
+            onClick={fillChronologyDraft}
+            placeholder="Klik untuk mengisi contoh kronologi"
+          />
         </label>
 
         <label className="report-upload-box">
@@ -383,7 +561,7 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
 
         <label className="report-anon-toggle">
           <input type="checkbox" checked={form.anonymousMode} onChange={(e) => updateField('anonymousMode', e.target.checked)} />
-          <span>Sembunyikan identitas saya dari siswa lain</span>
+          <span>Sembunyikan identitas</span>
         </label>
 
         {submitError && <div className="report-inline-feedback error">{submitError}</div>}
@@ -394,13 +572,8 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
         </button>
       </div>
 
-      <div className="report-timeline-wrap">
-        <span className="small-caps">Alur tindak lanjut</span>
-        <div className="report-timeline-row">
-          {timelineSteps.map((step) => (
-            <div key={step} className="report-step-pill">{step}</div>
-          ))}
-        </div>
+      <div className="report-history-heading">
+        <span>Riwayat Laporan</span>
       </div>
 
       <div className="report-status-list">
@@ -410,7 +583,6 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
               <div>
                 <div className="admin-case-title-row">
                   <strong>{item.id}</strong>
-                  <span className="chip">{item.priority}</span>
                 </div>
                 <p>{item.type} • {item.place}</p>
                 <small>{item.reporterLabel} • {item.createdAt}</small>
@@ -433,10 +605,53 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
   )
 }
 
-function ProfileTab({ user, onResolveQuest }) {
+function QuestTab({ user, onResolveQuest }) {
   const [activeScenario, setActiveScenario] = useState(questScenarios[0])
   const [feedback, setFeedback] = useState('')
   const [completedIds, setCompletedIds] = useState([])
+  const [selectedQuestId, setSelectedQuestId] = useState('map-3')
+  const [isChallengeOpen, setIsChallengeOpen] = useState(false)
+  const [selectedPointWeekKey, setSelectedPointWeekKey] = useState(pointWeekOptions[0].key)
+  const challengeCardRef = useRef(null)
+  const selectedPointWeek = pointWeekOptions.find((week) => week.key === selectedPointWeekKey) || pointWeekOptions[0]
+  const recordedPointItems = selectedPointWeek.items.filter((item) => typeof item.points === 'number')
+  const highestPoint = recordedPointItems.reduce((highest, item) => item.points > highest.points ? item : highest, recordedPointItems[0])
+  const lowestPoint = recordedPointItems.reduce((lowest, item) => item.points < lowest.points ? item : lowest, recordedPointItems[0])
+  const maxDailyPoints = Math.max(...recordedPointItems.map((item) => item.points), 1)
+  const questMapProgress = questMapNodes.map((node) => {
+    if (node.id === 'map-3' && completedIds.length > 0) {
+      return { ...node, status: 'Selesai', state: 'done' }
+    }
+
+    if (node.id === 'map-4' && completedIds.length > 0) {
+      return { ...node, status: 'Aktif', state: 'active' }
+    }
+
+    return node
+  })
+  const selectedQuestIndex = Math.max(0, questMapProgress.findIndex((node) => node.id === selectedQuestId))
+  const selectedQuestNode = questMapProgress[selectedQuestIndex] || questMapProgress[0]
+  const selectedQuestLocked = selectedQuestNode.state === 'locked'
+
+  useEffect(() => {
+    setIsChallengeOpen(false)
+    setFeedback('')
+  }, [selectedQuestId])
+
+  useEffect(() => {
+    if (!isChallengeOpen) {
+      return
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      challengeCardRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [activeScenario, isChallengeOpen])
 
   function selectOption(option) {
     setFeedback(`${option.outcome} (+${option.points} pts)`)
@@ -446,74 +661,128 @@ function ProfileTab({ user, onResolveQuest }) {
     }
   }
 
+  function openSelectedQuest() {
+    if (selectedQuestLocked) return
+    setActiveScenario(questScenarios[selectedQuestIndex % questScenarios.length])
+    setFeedback('')
+    setIsChallengeOpen(true)
+  }
+
   return (
-    <section className="panel grow profile-panel">
-      <div className="avatar-circle large-avatar">
-        <img src={createAnimeAvatarSvg(user.name)} alt={user.name} className="profile-avatar-img" />
-      </div>
-      <h3>{user.name}</h3>
-      <span className="chip">{user.roleLabel}</span>
+    <section className="quest-journey-panel">
+      <div className="quest-hero-card">
+        <div>
+          <span className="small-caps amber">Perjalanan Kind-Quest</span>
+          <h3>{user.name}</h3>
+          <p>{user.roleLabel} - {user.department}</p>
+        </div>
 
-      <div className="level-card">
-        <strong>{user.level}</strong>
-        <p>{user.school} • {user.department}</p>
-        <div className="profile-stats-grid">
-          <div>
-            <span>Poin</span>
-            <strong>{user.points}</strong>
-          </div>
-          <div>
-            <span>Streak</span>
-            <strong>{user.streak} hari</strong>
-          </div>
+        <div className="quest-points-pill">
+          <Sparkles size={16} />
+          <strong>{user.points}</strong>
+          <span>pts</span>
         </div>
       </div>
 
-      <div className="quest-list compact-quest-list">
-        {missionCards.map((quest) => (
-          <article key={quest.title} className="quest-card">
-            <div className="quest-top">
-              <strong>{quest.title}</strong>
-              <span>{quest.xp}</span>
+      <div className="quest-map-card">
+        <div className="weekly-points-head">
+          <div>
+            <span className="small-caps mint">Peta Kind-Quest</span>
+            <strong>Pilih titik misi</strong>
+          </div>
+          <Trophy size={18} />
+        </div>
+
+        <QuestTrailMap
+          nodes={questMapProgress}
+          selectedId={selectedQuestNode.id}
+          onSelect={setSelectedQuestId}
+          className="quest-page-trail"
+        />
+
+        <div className={`quest-map-detail-card ${selectedQuestNode.state}`}>
+          <div>
+            <span className="small-caps amber">{selectedQuestNode.status}</span>
+            <strong>{selectedQuestNode.title}</strong>
+            <p>{selectedQuestNode.detail}</p>
+          </div>
+          <button type="button" className="mini-action" onClick={openSelectedQuest} disabled={selectedQuestLocked}>
+            {selectedQuestLocked ? 'Belum terbuka' : 'Buka tantangan'}
+          </button>
+        </div>
+      </div>
+
+      {isChallengeOpen && (
+        <div ref={challengeCardRef} className="quest-simulator-card quest-active-card quest-question-card">
+          <div className="panel-head solid-bottom">
+            <div>
+              <span className="small-caps amber">Pertanyaan Kind-Quest</span>
+              <h3>{activeScenario.title}</h3>
             </div>
-            <div className="progress-bar"><div style={{ width: `${quest.progress}%` }} /></div>
-          </article>
-        ))}
-      </div>
-
-      <div className="quest-simulator-card">
-        <div className="panel-head solid-bottom">
-          <div>
-            <span className="small-caps amber">Kind-Quest simulator</span>
-            <h3>{activeScenario.title}</h3>
           </div>
-          <span className="chip">{activeScenario.badge}</span>
+
+          <p className="quest-summary">{activeScenario.summary}</p>
+
+          <div className="quest-question-copy">
+            <span className="small-caps mint">Apa yang harus dilakukan?</span>
+            <p className="quest-prompt">{activeScenario.prompt}</p>
+          </div>
+
+          <div className="quest-option-list">
+            {activeScenario.options.map((option) => (
+              <button key={option.id} className="quest-option-card" onClick={() => selectOption(option)}>
+                <HeartHandshake size={16} />
+                <span>{option.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {feedback && (
+            <div className="quest-feedback-card">
+              <CheckCircle2 size={16} />
+              <span>{feedback}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="weekly-points-card">
+        <div className="weekly-points-head">
+          <div>
+            <div className="weekly-points-label-row">
+              <span className="small-caps">Rekap poin</span>
+              <span>{selectedPointWeek.range}</span>
+            </div>
+          </div>
+          <div className="point-week-switch">
+            <select value={selectedPointWeekKey} onChange={(event) => setSelectedPointWeekKey(event.target.value)} aria-label="Pilih minggu rekap poin">
+              {pointWeekOptions.map((week) => (
+                <option key={week.key} value={week.key}>{week.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <p className="quest-summary">{activeScenario.summary}</p>
-        <p className="quest-prompt">{activeScenario.prompt}</p>
+        <div className="weekly-points-chart" aria-label={`Grafik rekap poin ${selectedPointWeek.label}`}>
+          {selectedPointWeek.items.map((item) => {
+            const hasPoint = typeof item.points === 'number'
+            const pointTag = hasPoint && item.day === highestPoint?.day ? 'Tertinggi' : hasPoint && item.day === lowestPoint?.day ? 'Terendah' : ''
 
-        <div className="quest-tab-row">
-          {questScenarios.map((scenario) => (
-            <button key={scenario.id} className={`mini-action ${scenario.id === activeScenario.id ? 'active-chip' : ''}`} onClick={() => { setActiveScenario(scenario); setFeedback('') }}>
-              {scenario.badge}
-            </button>
-          ))}
+            return (
+              <div key={item.day} className={`weekly-point-bar ${hasPoint ? '' : 'is-empty'}`.trim()}>
+                <div className="weekly-point-track">
+                  {pointTag && <span className={`weekly-point-tag ${pointTag.toLowerCase()}`}>{pointTag}</span>}
+                  {hasPoint && <div className="weekly-point-fill" style={{ height: `${Math.max(22, Math.round((item.points / maxDailyPoints) * 100))}%` }} />}
+                </div>
+                <span className="weekly-point-day">{item.day}</span>
+              </div>
+            )
+          })}
         </div>
-
-        <div className="quest-option-list">
-          {activeScenario.options.map((option) => (
-            <button key={option.id} className="quest-option-card" onClick={() => selectOption(option)}>
-              <HeartHandshake size={16} />
-              <span>{option.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {feedback && (
-          <div className="quest-feedback-card">
-            <CheckCircle2 size={16} />
-            <span>{feedback}</span>
+        {highestPoint && lowestPoint && (
+          <div className="weekly-points-extremes">
+            <span>Tertinggi: {highestPoint.day} - {highestPoint.points} pts</span>
+            <span>Terendah: {lowestPoint.day} - {lowestPoint.points} pts</span>
           </div>
         )}
       </div>
@@ -521,25 +790,26 @@ function ProfileTab({ user, onResolveQuest }) {
   )
 }
 
-function SosScreen({ onClose }) {
+export function SosScreen({ onClose }) {
   const [dispatchStarted, setDispatchStarted] = useState(false)
 
   if (!dispatchStarted) {
     return (
       <div className="phone-page sos-fullscreen sos-intro-screen">
-        <button className="sos-close-btn" onClick={onClose}>Kembali</button>
+        <button className="sos-close-btn icon-only" onClick={onClose} aria-label="Kembali">
+          <ArrowLeft size={18} />
+        </button>
 
         <section className="sos-intro-top solo-copy">
           <div className="sos-intro-copy">
             <h2>Butuh bantuan sekarang?</h2>
-            <p>Mode SOS menonjolkan alur yang diminta PDF: sinyal darurat, lokasi, dan kontak respon cepat sekolah dalam satu layar.</p>
+            <p>Tekan tombol SOS jika kamu membutuhkan bantuan segera. Tim sekolah akan menerima sinyal prioritas dan membantu dari lokasi terdekat.</p>
           </div>
         </section>
 
         <section className="sos-intro-card">
           <button type="button" className="sos-intro-button" onClick={() => setDispatchStarted(true)}>
             <span className="sos-intro-button-main">SOS</span>
-            <span className="sos-intro-button-sub">Aktifkan respon cepat sekolah</span>
           </button>
         </section>
       </div>
@@ -548,7 +818,9 @@ function SosScreen({ onClose }) {
 
   return (
     <div className="phone-page sos-fullscreen sos-calling-screen">
-      <button className="sos-close-btn" onClick={onClose}>Kembali</button>
+      <button className="sos-close-btn icon-only" onClick={onClose} aria-label="Kembali">
+        <ArrowLeft size={18} />
+      </button>
 
       <div className="sos-header">
         <h2>Respon cepat sedang berjalan</h2>
@@ -583,14 +855,13 @@ function SosScreen({ onClose }) {
 
       <div className="sos-status-card show">
         <strong>Bantuan berhasil dipanggil</strong>
-        <p>Prototype ini menonjolkan elemen lokasi, tim sekolah, dan status respon agar fungsi SOS lebih terasa sesuai deskripsi PDF.</p>
+        <p>Tim sekolah sedang memantau status bantuan dan menyiapkan pendampingan langsung dari petugas terdekat.</p>
       </div>
     </div>
   )
 }
 
 export default function AppScreen({
-  institution,
   user,
   activeTab,
   onTabChange,
@@ -603,11 +874,71 @@ export default function AppScreen({
   const [showSosScreen, setShowSosScreen] = useState(false)
   const [shieldEnabled, setShieldEnabled] = useState(true)
   const [shieldInput, setShieldInput] = useState('')
+  const [tabTransition, setTabTransition] = useState(null)
+  const previousTabRef = useRef(activeTab)
 
   const detectedWords = useMemo(() => {
     const lower = shieldInput.toLowerCase()
     return shieldFlaggedWords.filter((word) => lower.includes(word))
   }, [shieldInput])
+
+  useLayoutEffect(() => {
+    const previousTab = previousTabRef.current
+
+    if (previousTab === activeTab) {
+      return
+    }
+
+    const previousIndex = bottomTabs.findIndex((tab) => tab.key === previousTab)
+    const nextIndex = bottomTabs.findIndex((tab) => tab.key === activeTab)
+    const direction = previousIndex >= 0 && nextIndex >= 0 && nextIndex < previousIndex ? 'back' : 'forward'
+
+    setTabTransition({
+      from: previousTab,
+      to: activeTab,
+      direction,
+      id: `${previousTab}-${activeTab}-${Date.now()}`,
+    })
+    previousTabRef.current = activeTab
+  }, [activeTab])
+
+  useEffect(() => {
+    if (!tabTransition) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      setTabTransition((currentTransition) =>
+        currentTransition?.id === tabTransition.id ? null : currentTransition
+      )
+    }, TAB_TRANSITION_MS)
+
+    return () => clearTimeout(timer)
+  }, [tabTransition])
+
+  function renderTabContent(tabKey) {
+    if (tabKey === 'home') {
+      return <HomeTab user={user} />
+    }
+
+    if (tabKey === 'shield') {
+      return <ShieldTab shieldEnabled={shieldEnabled} setShieldEnabled={setShieldEnabled} shieldInput={shieldInput} setShieldInput={setShieldInput} detectedWords={detectedWords} />
+    }
+
+    if (tabKey === 'kindbot') {
+      return <KindbotTab />
+    }
+
+    if (tabKey === 'report') {
+      return <ReportTab reports={reports} onCreateReport={onCreateReport} isSubmittingReport={isReportMutationPending} />
+    }
+
+    if (tabKey === 'quest') {
+      return <QuestTab user={user} onResolveQuest={onResolveQuest} />
+    }
+
+    return null
+  }
 
   if (showSosScreen) {
     return <SosScreen onClose={() => setShowSosScreen(false)} />
@@ -616,25 +947,35 @@ export default function AppScreen({
   return (
     <div className="phone-page app-page">
       <header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="app-header-brand">
           <KindReachLogo size={32} rounded={10} />
-          <div>
-            <span className="small-caps">{institution.schoolCode} • {user.role}</span>
+          <div className="app-header-title">
             <h2>{activeTab === 'home' ? 'KindReach' : bottomTabs.find((tab) => tab.key === activeTab)?.label}</h2>
           </div>
         </div>
 
         <button className="logout-btn" onClick={onLogout}>
-          <LogOut size={16} />
+          <ArrowLeft size={18} />
         </button>
       </header>
 
-      <main className="app-content">
-        {activeTab === 'home' && <HomeTab user={user} reports={reports} onNavigate={onTabChange} />}
-        {activeTab === 'shield' && <ShieldTab shieldEnabled={shieldEnabled} setShieldEnabled={setShieldEnabled} shieldInput={shieldInput} setShieldInput={setShieldInput} detectedWords={detectedWords} />}
-        {activeTab === 'kindbot' && <KindbotTab onNavigate={onTabChange} />}
-        {activeTab === 'report' && <ReportTab reports={reports} onCreateReport={onCreateReport} isSubmittingReport={isReportMutationPending} />}
-        {activeTab === 'profile' && <ProfileTab user={user} onResolveQuest={onResolveQuest} />}
+      <main className="app-content tab-transition-stack">
+        {tabTransition && (
+          <div
+            key={`tab-exit-${tabTransition.id}`}
+            className={`tab-layer tab-layer-exit exit-${tabTransition.direction}`}
+            aria-hidden="true"
+          >
+            {renderTabContent(tabTransition.from)}
+          </div>
+        )}
+
+        <div
+          key={`tab-active-${activeTab}`}
+          className={`tab-layer tab-layer-current ${tabTransition ? `enter-${tabTransition.direction}` : 'active'}`}
+        >
+          {renderTabContent(activeTab)}
+        </div>
       </main>
 
       <button className="sos-floating-bubble" onClick={() => setShowSosScreen(true)}>

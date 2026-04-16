@@ -1,3 +1,5 @@
+
+
 ## Menjalankan proyek
 ### Terminal 1 - Frontend
 ```bash
@@ -44,8 +46,11 @@ UPDATE
 - `server/index.js`: API lokal untuk laporan
 - `server/db.json`: seed data awal laporan
 
-## Catatan
+## Catatan update per revisi 11 april
+- tata layout beberapa bagian 
+- KindQuest berisi ()
+- profile diubah menjadi kind quest yang berisi peta misi dsb
+- profil dan skor berada di halaman utaman, menghapus streak karena tidak sesuai konteks penilaian
+- saya inisiatif memberikan perbandingan berupa diagram batang untuk membandingkan skor per harinya (jika dirasa tidak perlu mohon di sampaikan hehe)
+- 
 
-- Upload file masih berupa nama file saja, belum upload sungguhan.
-- Login, akses sekolah, KindBot, Shield, dan SOS masih fokus sebagai prototipe interaktif.
-- Flow `Report -> Admin` adalah bagian utama yang sekarang dibuat lebih hidup untuk demo.

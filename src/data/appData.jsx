@@ -18,7 +18,6 @@ import {
   ShieldAlert,
   Sparkles,
   Trophy,
-  User,
   Users,
   Wallet,
 } from 'lucide-react'
@@ -30,6 +29,7 @@ export const loginAccounts = [
     email: 'resty.kartika.sari@kindreach.id',
     school: 'SMA Harmoni Nusantara',
     schoolCode: 'HN-2026',
+    accountCode: 'SIS-HN-2026',
     role: 'Siswa',
     roleLabel: 'Kindness Warrior',
     points: 2480,
@@ -44,6 +44,7 @@ export const loginAccounts = [
     email: 'dinda.maharani@kindreach.id',
     school: 'SMA Harmoni Nusantara',
     schoolCode: 'HN-2026',
+    accountCode: 'BK-HN-2026',
     role: 'Guru BK',
     roleLabel: 'Student Support Lead',
     points: 3120,
@@ -51,6 +52,11 @@ export const loginAccounts = [
     level: 'Care Leader',
     focus: 'Fokus hari ini: meninjau pola laporan, memberi dukungan awal, dan menindaklanjuti kasus prioritas.',
     department: 'Bimbingan Konseling',
+    staffPermissions: {
+      canVerify: true,
+      canProcess: true,
+      canComplete: false,
+    },
   },
   {
     id: 'admin',
@@ -58,6 +64,7 @@ export const loginAccounts = [
     email: 'raka.aditya@kindreach.id',
     school: 'SMA Harmoni Nusantara',
     schoolCode: 'HN-2026',
+    accountCode: 'ADM-HN-2026',
     role: 'Admin Sekolah',
     roleLabel: 'School Safety Admin',
     points: 4280,
@@ -65,6 +72,11 @@ export const loginAccounts = [
     level: 'System Guardian',
     focus: 'Fokus hari ini: memverifikasi laporan masuk, memantau respon cepat, dan mengoordinasikan tim sekolah.',
     department: 'Manajemen Sekolah',
+    staffPermissions: {
+      canVerify: false,
+      canProcess: false,
+      canComplete: true,
+    },
   },
 ]
 
@@ -101,29 +113,29 @@ export const featureCards = [
   {
     key: 'cyber',
     title: 'Cyber-Shield',
-    text: 'Nudging real-time untuk menahan pesan kasar sebelum terkirim.',
-    status: 'Preventive',
+    text: 'Memberi peringatan saat pesan mengandung kata kasar atau mengarah ke bullying.',
+    status: 'Pencegahan',
     color: 'teal',
   },
   {
     key: 'kindbot',
     title: 'KindBot',
-    text: 'AI companion yang validatif, suportif, dan siap bantu susun langkah aman.',
-    status: 'AI Listener',
+    text: 'Teman pendamping yang membantu menyusun langkah aman tanpa menghakimi.',
+    status: 'Pendamping AI',
     color: 'violet',
   },
   {
     key: 'report',
     title: 'Laman Lapor',
-    text: 'Form anonim dengan bukti, kronologi, prioritas, dan status tindak lanjut.',
-    status: 'Protected',
+    text: 'Form aman untuk mengirim kronologi, lokasi, dan bukti ke tim sekolah.',
+    status: 'Terlindungi',
     color: 'rose',
   },
   {
     key: 'quest',
     title: 'Kind-Quest',
-    text: 'Misi simulasi sosial untuk melatih empati dan active defending.',
-    status: 'Gamified',
+    text: 'Misi interaktif untuk melatih empati, keberanian membantu, dan respons aman.',
+    status: 'Misi Empati',
     color: 'amber',
   },
 ]
@@ -172,17 +184,17 @@ export const initialReports = [
 
 export const missionCards = [
   { title: 'Bela Temanmu', xp: '+120 pts', progress: 80 },
-  { title: 'Empathy Challenge', xp: '+90 pts', progress: 55 },
-  { title: 'Speak Up Safely', xp: '+140 pts', progress: 35 },
+  { title: 'Tantangan Empati', xp: '+90 pts', progress: 55 },
+  { title: 'Berani Bicara Aman', xp: '+140 pts', progress: 35 },
 ]
 
 export const questScenarios = [
   {
     id: 'quest-1',
     title: 'Chat Grup Kelas Memanas',
-    badge: 'Scenario 01',
+    badge: 'Skenario 01',
     summary: 'Seseorang mulai mengejek teman sekelas di grup dan siswa lain ikut menertawakan.',
-    prompt: 'Apa tindakan paling aman dan empatik yang sebaiknya kamu lakukan?',
+    prompt: 'Jika kejadian ini terjadi di sekitarmu, tindakan paling aman dan empatik apa yang sebaiknya kamu lakukan terlebih dahulu?',
     reward: 120,
     options: [
       {
@@ -208,9 +220,9 @@ export const questScenarios = [
   {
     id: 'quest-2',
     title: 'Temanmu Takut Melapor',
-    badge: 'Scenario 02',
+    badge: 'Skenario 02',
     summary: 'Korban bilang takut dibalas kalau sampai guru tahu siapa yang melapor.',
-    prompt: 'Respons seperti apa yang paling membantu?',
+    prompt: 'Jika temanmu mengalami situasi ini, respons seperti apa yang paling membantu dan aman untuk dilakukan?',
     reward: 140,
     options: [
       {
@@ -280,7 +292,7 @@ export const bottomTabs = [
   { key: 'shield', label: 'Shield', icon: ShieldAlert },
   { key: 'kindbot', label: 'KindBot', icon: Bot },
   { key: 'report', label: 'Lapor', icon: FileWarning },
-  { key: 'profile', label: 'Profil', icon: User },
+  { key: 'quest', label: 'Quest', icon: Trophy },
 ]
 
 export const adminMenu = [

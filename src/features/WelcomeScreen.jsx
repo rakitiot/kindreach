@@ -4,28 +4,25 @@ export default function WelcomeScreen({ onOpenInstitution, onOpenLogin }) {
   return (
     <div className="phone-page welcome-page">
       <div className="welcome-content welcome-kindness-screen">
-        <div className="welcome-logo-wrap welcome-centered-logo">
-          <KindReachLogo size={88} rounded={26} />
+        <div className="welcome-brand-row">
+          <KindReachLogo size={42} rounded={12} />
+          <strong>KindReach</strong>
         </div>
 
-        <span className="small-caps mint welcome-kicker">Kindness Warrior</span>
-
         <h2 className="welcome-main-title">
-          Selamat datang di
-          <br />
-          ekosistem KindReach
+          <span>Selamat Datang</span>
+          <span>Kindness Warrior</span>
         </h2>
 
         <p className="welcome-lead">
-          KindReach menghadirkan ruang aman digital untuk pencegahan, pelaporan,
-          respon cepat, dan edukasi anti-bullying di lingkungan sekolah.
+          Ruang aman untuk mendapat dukungan, melapor, dan belajar saling menjaga.
         </p>
 
         <div className="welcome-user-card welcome-role-card">
-          <strong>Mulai sesuai peranmu</strong>
+          <strong>Masuk sesuai kebutuhanmu</strong>
           <span>
-            Sekolah mendaftar sebagai admin pusat. Siswa dan guru masuk menggunakan
-            akses yang telah diverifikasi oleh sekolah.
+            Jika sekolahmu sudah terdaftar dan kamu sudah memiliki akun, klik Log In.
+            Jika institusi ingin mendaftar, klik Daftar / Registrasi Institusi.
           </span>
         </div>
 
@@ -35,7 +32,7 @@ export default function WelcomeScreen({ onOpenInstitution, onOpenLogin }) {
           </button>
 
           <button className="welcome-continue-btn secondary-register-btn" onClick={onOpenInstitution}>
-            Registrasi Institusi
+            Daftar / Registrasi Institusi
           </button>
         </div>
       </div>

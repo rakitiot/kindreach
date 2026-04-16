@@ -1,110 +1,73 @@
 import KindReachLogo from '../components/KindReachLogo'
 
+const splashGreeters = [
+  { id: 'student', side: 'left', hair: '#24324e', accent: '#63f2df', shirt: '#587dff', skin: '#f5c9a9' },
+  { id: 'teacher', side: 'right', hair: '#2f2738', accent: '#ffc857', shirt: '#2de2cf', skin: '#f0bd99' },
+  { id: 'counselor', side: 'bottom', hair: '#3b2b52', accent: '#ff7aa8', shirt: '#8b7cff', skin: '#e6b08f' },
+]
+
+function SplashGreeter({ id, side, hair, accent, shirt, skin }) {
+  return (
+    <div className={`splash-greeter ${side}`}>
+      <svg viewBox="0 0 92 112" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id={`splashGreeterGlow-${id}`} cx="50%" cy="30%" r="70%">
+            <stop offset="0%" stopColor={accent} stopOpacity=".34" />
+            <stop offset="100%" stopColor={accent} stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="46" cy="58" rx="42" ry="48" fill={`url(#splashGreeterGlow-${id})`} />
+        <path className="greeter-arm back" d="M22 70 C5 64 8 45 24 44" stroke={skin} strokeWidth="9" strokeLinecap="round" fill="none" />
+        <path className="greeter-body" d="M23 92 C25 71 34 60 46 60 C58 60 67 71 70 92 Z" fill={shirt} />
+        <path d="M30 92 C34 78 39 71 46 71 C53 71 58 78 62 92" fill="rgba(255,255,255,.16)" />
+        <circle cx="46" cy="42" r="22" fill={skin} />
+        <path d="M24 39 C25 21 39 14 51 18 C65 22 70 33 67 45 C58 40 46 33 28 40 Z" fill={hair} />
+        <circle cx="38" cy="44" r="2.4" fill="#1e2a3f" />
+        <circle cx="54" cy="44" r="2.4" fill="#1e2a3f" />
+        <path d="M39 53 C43 57 50 57 54 53" stroke="#1e2a3f" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <g className="greeter-wave-hand">
+          <path className="greeter-arm wave" d="M67 68 C84 61 88 45 76 34" stroke={skin} strokeWidth="9" strokeLinecap="round" fill="none" />
+          <circle cx="76" cy="34" r="6" fill={skin} />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
 export default function SplashScreen() {
   return (
-    <div className="phone-page welcome-page">
-      <div
-        className="welcome-content"
-        style={{
-          justifyContent: 'center',
-          minHeight: '100%',
-          gap: 22,
-        }}
-      >
-        <div
-          className="welcome-logo-wrap"
-          style={{
-            position: 'relative',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              width: 120,
-              height: 120,
-              borderRadius: '999px',
-              background: 'radial-gradient(circle, rgba(74,255,223,.22), transparent 68%)',
-              filter: 'blur(8px)',
-            }}
-          />
-          <div
-            style={{
-              position: 'relative',
-              zIndex: 1,
-              padding: 14,
-              borderRadius: 28,
-              background: 'rgba(255,255,255,.06)',
-              border: '1px solid rgba(255,255,255,.08)',
-              boxShadow: '0 18px 40px rgba(0,0,0,.25)',
-            }}
-          >
+    <div className="phone-page welcome-page splash-page">
+      <div className="splash-character-layer" aria-hidden="true">
+        {splashGreeters.map((person) => (
+          <SplashGreeter key={person.id} {...person} />
+        ))}
+      </div>
+
+      <div className="splash-content">
+        <div className="splash-logo-wrap">
+          <div className="splash-logo-glow" />
+          <div className="splash-logo-card">
             <KindReachLogo size={92} rounded={26} />
           </div>
         </div>
 
-        <div style={{ display: 'grid', gap: 10, textAlign: 'center' }}>
+        <div className="splash-copy">
           <span className="small-caps mint">KindReach</span>
-          <h2 style={{ margin: 0, fontSize: '2rem', lineHeight: 1.15 }}>
-            Reach out. Stay kind.
-          </h2>
-          <p
-            style={{
-              margin: 0,
-              color: '#aab8d6',
-              lineHeight: 1.7,
-              maxWidth: 290,
-            }}
-          >
+          <h2>Reach out. Stay kind.</h2>
+          <p>
             Ruang aman digital untuk dukungan, pelaporan, dan edukasi anti-bullying di lingkungan sekolah.
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 6,
-          }}
-        >
-          <span
-            style={{
-              width: 26,
-              height: 8,
-              borderRadius: 999,
-              background: 'linear-gradient(90deg, #29d7c4, #7b67ff)',
-              boxShadow: '0 0 16px rgba(72, 214, 197, .35)',
-            }}
-          />
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '999px',
-              background: 'rgba(255,255,255,.26)',
-            }}
-          />
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '999px',
-              background: 'rgba(255,255,255,.16)',
-            }}
-          />
-        </div>
+        <div className="splash-status-stack">
+          <div className="splash-progress-dots">
+            <span className="active" />
+            <span />
+            <span />
+          </div>
 
-        <p
-          style={{
-            margin: 0,
-            fontSize: '.88rem',
-            color: '#8fa1c6',
-            letterSpacing: '.04em',
-          }}
-        >
-          Loading kindness experience...
-        </p>
+          <p>Loading kindness experience...</p>
+        </div>
       </div>
     </div>
   )
