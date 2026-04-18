@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   FileWarning,
   HeartHandshake,
+  LogOut,
   MapPin,
   Mic,
   Send,
@@ -239,12 +240,15 @@ function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel 
 function HomeTab({ user }) {
   const heroAvatar = user.avatar || createAnimeAvatarSvg(user.name)
   const firstName = user.name.split(' ')[0]
+  const weeklyProgress = 230
+  const weeklyTarget = 320
+  const weeklyProgressPercent = Math.min(100, Math.round((weeklyProgress / weeklyTarget) * 100))
 
   return (
     <>
       <section className="app-hero-card">
         <div className="hero-copy">
-          <span className="small-caps mint">Psychological Safety</span>
+          <span className="small-caps mint">Keep your mental health</span>
 
           <div className="hero-title-row">
             <div className="hero-avatar-wrap floating-avatar">
@@ -255,6 +259,30 @@ function HomeTab({ user }) {
               <h2>Halo, {firstName}</h2>
               <p>Kindness Warrior - XI IPS 2</p>
             </div>
+          </div>
+
+          <div className="home-score-panel">
+            <div className="home-score-main">
+              <span>Total poin</span>
+              <strong>{user.points}</strong>
+              <small>Empathy Guardian</small>
+            </div>
+
+            <div className="home-score-progress">
+              <div className="home-score-progress-head">
+                <span>Progress minggu ini</span>
+                <strong>{weeklyProgress} / {weeklyTarget} pts</strong>
+              </div>
+              <div className="home-score-track" aria-hidden="true">
+                <i style={{ width: `${weeklyProgressPercent}%` }} />
+              </div>
+            </div>
+          </div>
+
+          <div className="home-score-chip-row">
+            <span>+82 pts hari ini</span>
+            <span>2 quest selesai</span>
+            <span>Badge: Teman Digital Aman</span>
           </div>
         </div>
       </section>
@@ -608,6 +636,8 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
 function QuestTab({ user, onResolveQuest }) {
   const [activeScenario, setActiveScenario] = useState(questScenarios[0])
   const [feedback, setFeedback] = useState('')
+  const [selectedOptionId, setSelectedOptionId] = useState('')
+  const [lastPoints, setLastPoints] = useState(null)
   const [completedIds, setCompletedIds] = useState([])
   const [selectedQuestId, setSelectedQuestId] = useState('map-3')
   const [isChallengeOpen, setIsChallengeOpen] = useState(false)
@@ -632,10 +662,18 @@ function QuestTab({ user, onResolveQuest }) {
   const selectedQuestIndex = Math.max(0, questMapProgress.findIndex((node) => node.id === selectedQuestId))
   const selectedQuestNode = questMapProgress[selectedQuestIndex] || questMapProgress[0]
   const selectedQuestLocked = selectedQuestNode.state === 'locked'
+  const highestScenarioPoints = Math.max(...activeScenario.options.map((option) => option.points), 0)
+  const selectedOption = activeScenario.options.find((option) => option.id === selectedOptionId)
+  const selectedOptionIsBest = Boolean(selectedOption && selectedOption.points >= highestScenarioPoints)
+  const selectedScoreRatio = selectedOption ? selectedOption.points / Math.max(highestScenarioPoints, 1) : 0
+  const empathyMeterValue = selectedOption ? Math.max(26, Math.round(selectedScoreRatio * 100)) : 48
+  const riskMeterValue = selectedOption ? Math.max(8, Math.round((1 - selectedScoreRatio) * 100)) : 52
 
   useEffect(() => {
     setIsChallengeOpen(false)
     setFeedback('')
+    setSelectedOptionId('')
+    setLastPoints(null)
   }, [selectedQuestId])
 
   useEffect(() => {
@@ -654,7 +692,9 @@ function QuestTab({ user, onResolveQuest }) {
   }, [activeScenario, isChallengeOpen])
 
   function selectOption(option) {
-    setFeedback(`${option.outcome} (+${option.points} pts)`)
+    setSelectedOptionId(option.id)
+    setLastPoints(option.points)
+    setFeedback(option.outcome)
     if (!completedIds.includes(activeScenario.id)) {
       onResolveQuest(option.points)
       setCompletedIds((prev) => [...prev, activeScenario.id])
@@ -665,6 +705,8 @@ function QuestTab({ user, onResolveQuest }) {
     if (selectedQuestLocked) return
     setActiveScenario(questScenarios[selectedQuestIndex % questScenarios.length])
     setFeedback('')
+    setSelectedOptionId('')
+    setLastPoints(null)
     setIsChallengeOpen(true)
   }
 
@@ -713,15 +755,41 @@ function QuestTab({ user, onResolveQuest }) {
       </div>
 
       {isChallengeOpen && (
-        <div ref={challengeCardRef} className="quest-simulator-card quest-active-card quest-question-card">
-          <div className="panel-head solid-bottom">
+        <div ref={challengeCardRef} className={`quest-simulator-card quest-active-card quest-question-card ${feedback ? 'has-feedback' : ''}`}>
+          <div className="quest-mission-start" aria-hidden="true">
+            <span>Misi dimulai</span>
+            <strong>{activeScenario.title}</strong>
+          </div>
+
+          <div className="panel-head solid-bottom quest-arcade-head">
             <div>
               <span className="small-caps amber">Pertanyaan Kind-Quest</span>
               <h3>{activeScenario.title}</h3>
             </div>
+            <div className="quest-level-chip">
+              <span>Reward</span>
+              <strong>+{highestScenarioPoints}</strong>
+            </div>
           </div>
 
           <p className="quest-summary">{activeScenario.summary}</p>
+
+          <div className="quest-meter-grid" aria-label="Indikator hasil pilihan">
+            <div className="quest-meter-card empathy">
+              <span>Empati</span>
+              <strong>{empathyMeterValue}%</strong>
+              <div className="quest-meter-track">
+                <i style={{ width: `${empathyMeterValue}%` }} />
+              </div>
+            </div>
+            <div className="quest-meter-card risk">
+              <span>Risiko</span>
+              <strong>{riskMeterValue}%</strong>
+              <div className="quest-meter-track">
+                <i style={{ width: `${riskMeterValue}%` }} />
+              </div>
+            </div>
+          </div>
 
           <div className="quest-question-copy">
             <span className="small-caps mint">Apa yang harus dilakukan?</span>
@@ -729,18 +797,35 @@ function QuestTab({ user, onResolveQuest }) {
           </div>
 
           <div className="quest-option-list">
-            {activeScenario.options.map((option) => (
-              <button key={option.id} className="quest-option-card" onClick={() => selectOption(option)}>
-                <HeartHandshake size={16} />
-                <span>{option.label}</span>
-              </button>
-            ))}
+            {activeScenario.options.map((option, index) => {
+              const isSelected = selectedOptionId === option.id
+              const isDimmed = selectedOptionId && !isSelected
+
+              return (
+                <button
+                  key={option.id}
+                  className={`quest-option-card quest-arcade-option ${isSelected ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}`}
+                  style={{ '--option-order': index }}
+                  onClick={() => selectOption(option)}
+                >
+                  <HeartHandshake size={16} className="quest-option-heart" />
+                  <span>{option.label}</span>
+                  {isSelected && <strong className="quest-reward-pop">+{option.points} pts</strong>}
+                </button>
+              )
+            })}
           </div>
 
           {feedback && (
-            <div className="quest-feedback-card">
+            <div className={`quest-feedback-card quest-arcade-feedback ${selectedOptionIsBest ? 'best' : 'needs-growth'}`}>
+              <span className="quest-feedback-sparkle" aria-hidden="true" />
               <CheckCircle2 size={16} />
-              <span>{feedback}</span>
+              <div>
+                <strong>{selectedOptionIsBest ? 'Misi terbaik' : 'Strategi aman perlu ditingkatkan'}</strong>
+                <p>{feedback}</p>
+                {lastPoints !== null && <span className="quest-feedback-points">+{lastPoints} pts</span>}
+                {selectedOptionIsBest && <span className="quest-badge-unlock">Badge terbuka: Teman Digital Aman</span>}
+              </div>
             </div>
           )}
         </div>
@@ -955,7 +1040,7 @@ export default function AppScreen({
         </div>
 
         <button className="logout-btn" onClick={onLogout}>
-          <ArrowLeft size={18} />
+          <LogOut size={18} />
         </button>
       </header>
 
