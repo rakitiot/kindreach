@@ -8614,6 +8614,46 @@ button.feature-demo-card {
   border: 1px solid rgba(255,63,112,.25);
 }
 
+.report-intro-card .panel-head {
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom-color: rgba(255,255,255,.12);
+}
+
+.report-intro-card .small-caps.rose {
+  display: inline-flex;
+  margin-bottom: 3px;
+  color: #ffc3cf;
+  font-size: .64rem;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.report-intro-card .panel-head h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.18rem;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  text-shadow: 0 8px 22px rgba(255,63,112,.22);
+}
+
+.report-intro-card .chip {
+  padding: 7px 10px;
+  font-size: .64rem;
+  font-weight: 900;
+}
+
+.report-intro-card .report-security-card {
+  margin-top: 8px;
+}
+
+.report-intro-card .report-security-card strong {
+  color: #fff5f8;
+  font-size: .92rem;
+  line-height: 1.25;
+}
+
 .report-security-card {
   border-left-color: var(--kr-report-main);
 }
@@ -9088,76 +9128,7 @@ button.feature-demo-card {
   box-shadow: 0 14px 28px rgba(255,211,106,.18);
 }
 
-/* ===== KindQuest mode selector + true edge-to-edge game screen ===== */
-.quest-mode-slider {
-  display: flex;
-  gap: 9px;
-  margin: 0 -2px 10px;
-  padding: 2px 2px 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-}
-
-.quest-mode-slider::-webkit-scrollbar {
-  display: none;
-}
-
-.quest-mode-card {
-  flex: 0 0 128px;
-  min-height: 112px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 20px;
-  padding: 10px;
-  display: grid;
-  align-content: start;
-  gap: 5px;
-  color: #eef4ff;
-  text-align: left;
-  scroll-snap-align: start;
-  background:
-    radial-gradient(circle at 86% 14%, rgba(118,215,255,.10), transparent 36%),
-    linear-gradient(145deg, rgba(13,25,48,.92), rgba(11,18,36,.94));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
-}
-
-.quest-mode-card span {
-  color: #ffe3a3;
-  font-size: .5rem;
-  font-weight: 950;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-.quest-mode-card strong {
-  font-size: .8rem;
-  line-height: 1.12;
-}
-
-.quest-mode-card small {
-  color: #9fb1d3;
-  font-size: .62rem;
-  line-height: 1.28;
-}
-
-.quest-mode-card.active {
-  border-color: rgba(255,211,106,.34);
-  background:
-    radial-gradient(circle at 86% 10%, rgba(255,211,106,.18), transparent 38%),
-    linear-gradient(145deg, rgba(35,34,83,.92), rgba(17,30,60,.94));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.07),
-    0 12px 22px rgba(255,211,106,.08);
-}
-
-.quest-mode-card.locked {
-  opacity: .72;
-}
-
-.quest-mode-card.locked span {
-  color: rgba(255,211,106,.62);
-}
-
+/* ===== KindQuest topic header + true edge-to-edge game screen ===== */
 .quest-topic-head {
   align-items: center;
   margin-bottom: 7px;
@@ -9268,4 +9239,975 @@ button.feature-demo-card {
 .quest-game-mode .tab-layer-current,
 .quest-game-mode .quest-game-screen {
   overflow-x: hidden;
+}
+
+/* ===== Fixed phone scale lock for browser zoom changes ===== */
+.phone-stage {
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.phone-frame {
+  width: 390px !important;
+  height: 844px !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 390px;
+  min-height: 844px;
+  aspect-ratio: auto;
+  flex: 0 0 auto;
+  transform: scale(var(--kr-phone-scale, 1)) !important;
+  transform-origin: center center;
+  border-radius: 56px;
+  padding: 12px;
+  zoom: 1 !important;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.quest-journey-panel,
+.quest-map-card,
+.quest-map-trail,
+.quest-page-trail {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ===== Option 4 preview: mini-map + mission list ===== */
+.quest-hybrid-map {
+  width: 100%;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.quest-map-trail.quest-mini-trail {
+  height: 116px;
+  min-height: 116px;
+  margin: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 22%, rgba(98,242,219,.16), transparent 26%),
+    radial-gradient(circle at 76% 30%, rgba(255,211,106,.12), transparent 24%),
+    rgba(7,18,36,.38);
+}
+
+.quest-mini-trail .quest-trail-svg {
+  inset: -6px 0 0;
+  width: 100%;
+  height: 142px;
+}
+
+.quest-mini-trail .quest-trail-depth {
+  stroke-width: 22;
+  transform: translate(4px, 7px);
+}
+
+.quest-mini-trail .quest-trail-outline {
+  stroke-width: 21;
+}
+
+.quest-mini-trail .quest-trail-base {
+  stroke-width: 16;
+}
+
+.quest-mini-trail .quest-trail-highlight {
+  stroke-width: 1.6;
+  stroke-dasharray: 20 42;
+}
+
+.quest-mini-trail .quest-trail-glow {
+  stroke-width: 2.2;
+  stroke-dasharray: 7 13;
+}
+
+.quest-mini-trail .quest-finish-flag {
+  transform: translate(0, 20px) scale(.82);
+}
+
+.quest-mini-trail .trail-node {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+
+.quest-mini-trail .trail-node .quest-map-marker {
+  width: 20px;
+  height: 20px;
+  border-width: 3px;
+  box-shadow: 0 8px 10px rgba(0,0,0,.20);
+}
+
+.quest-mini-trail .quest-map-dot {
+  inset: 4px;
+}
+
+.quest-mini-trail .trail-node .quest-map-copy {
+  display: none;
+}
+
+.quest-mini-trail .quest-node-1 {
+  top: 18px;
+  left: 118px;
+}
+
+.quest-mini-trail .quest-node-2 {
+  top: 45px;
+  right: 72px;
+}
+
+.quest-mini-trail .quest-node-3 {
+  top: 77px;
+  left: 54px;
+}
+
+.quest-mini-trail .quest-node-4 {
+  top: 96px;
+  right: 82px;
+}
+
+.quest-topic-list {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 9px;
+}
+
+.quest-topic-item {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  padding: 9px 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  color: #eef4ff;
+  text-align: left;
+  background: rgba(255,255,255,.045);
+}
+
+.quest-topic-item.selected {
+  border-color: rgba(255,211,106,.30);
+  background: linear-gradient(145deg, rgba(255,211,106,.10), rgba(255,255,255,.045));
+}
+
+.quest-topic-item.locked {
+  opacity: .62;
+}
+
+.quest-topic-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #1b1725;
+  font-size: .68rem;
+  font-weight: 950;
+  background: linear-gradient(135deg, #ffd36a, #ffe19a);
+}
+
+.quest-topic-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.quest-topic-copy strong {
+  overflow: hidden;
+  color: #f8fbff;
+  font-size: .76rem;
+  line-height: 1.16;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quest-topic-copy small {
+  color: #9fb1d3;
+  font-size: .58rem;
+  line-height: 1;
+}
+
+.quest-topic-state {
+  padding: 5px 7px;
+  border-radius: 999px;
+  color: #dce7ff;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.08);
+  font-size: .54rem;
+  font-weight: 900;
+}
+
+.quest-topic-item.active .quest-topic-state,
+.quest-topic-item.selected .quest-topic-state {
+  color: #fff1bd;
+  background: rgba(255,211,106,.12);
+  border-color: rgba(255,211,106,.18);
+}
+
+/* ===== Restored original clean topic map: no mode/card experiment ===== */
+.quest-map-trail.quest-page-trail {
+  height: auto;
+  min-height: 256px;
+  margin: 0 0 9px;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(45,226,207,.2), transparent 24%),
+    radial-gradient(circle at 78% 42%, rgba(255,195,112,.18), transparent 24%),
+    radial-gradient(circle at 30% 86%, rgba(126,105,255,.12), transparent 24%),
+    rgba(7,18,36,.42);
+}
+
+.quest-page-trail .quest-trail-svg {
+  inset: 10px 0 0;
+  width: 100%;
+  height: 250px;
+}
+
+.quest-page-trail .quest-trail-depth {
+  stroke-width: 36;
+  transform: translate(7px, 11px);
+}
+
+.quest-page-trail .quest-trail-outline {
+  stroke-width: 35;
+}
+
+.quest-page-trail .quest-trail-base {
+  stroke-width: 28;
+}
+
+.quest-page-trail .quest-trail-highlight {
+  stroke-width: 2;
+}
+
+.quest-page-trail .quest-trail-glow {
+  stroke-width: 3;
+}
+
+.quest-page-trail .quest-finish-flag {
+  transform: translateY(18px);
+}
+
+.quest-page-trail .trail-node {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+}
+
+.quest-page-trail .trail-node .quest-map-marker {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+  box-shadow: 0 11px 13px rgba(0,0,0,.24);
+}
+
+.quest-page-trail .quest-map-dot {
+  inset: 5px;
+}
+
+.quest-page-trail .trail-node .quest-map-copy {
+  width: 96px;
+  display: block;
+  padding: 5px 7px;
+  border-radius: 12px;
+  background: rgba(8,18,34,.72);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.quest-page-trail .trail-node .quest-map-copy strong {
+  font-size: .52rem;
+  line-height: 1.16;
+  -webkit-line-clamp: 2;
+}
+
+.quest-page-trail .trail-node .quest-map-copy p {
+  display: block;
+  margin-top: 2px;
+  color: #9fb1d3;
+  font-size: .47rem;
+  line-height: 1.1;
+}
+
+.quest-page-trail .quest-node-1 {
+  top: 40px;
+  left: 116px;
+}
+
+.quest-page-trail .quest-node-2 {
+  top: 102px;
+  right: 64px;
+}
+
+.quest-page-trail .quest-node-3 {
+  top: 171px;
+  left: 50px;
+}
+
+.quest-page-trail .quest-node-4 {
+  top: 211px;
+  right: 76px;
+}
+
+.quest-page-trail .quest-node-1 .quest-map-copy {
+  left: 30px;
+}
+
+.quest-page-trail .quest-node-2 .quest-map-copy,
+.quest-page-trail .quest-node-4 .quest-map-copy {
+  right: 30px;
+}
+
+.quest-page-trail .quest-node-3 .quest-map-copy {
+  left: 30px;
+}
+
+.app-content,
+.quest-journey-panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app-content::-webkit-scrollbar,
+.quest-journey-panel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ===== Hide visual scrollbars, keep Quest page genuinely scrollable ===== */
+.phone-page,
+.app-page,
+.app-content,
+.tab-transition-stack,
+.tab-layer,
+.tab-layer-current,
+.quest-journey-panel,
+.quest-map-card,
+.quest-map-trail,
+.quest-page-trail {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.app-content {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.quest-journey-panel {
+  overflow: visible !important;
+}
+
+.quest-map-card,
+.quest-map-trail,
+.quest-page-trail {
+  overflow: hidden !important;
+}
+
+.phone-page::-webkit-scrollbar,
+.app-page::-webkit-scrollbar,
+.app-content::-webkit-scrollbar,
+.tab-transition-stack::-webkit-scrollbar,
+.tab-layer::-webkit-scrollbar,
+.tab-layer-current::-webkit-scrollbar,
+.quest-journey-panel::-webkit-scrollbar,
+.quest-map-card::-webkit-scrollbar,
+.quest-map-trail::-webkit-scrollbar,
+.quest-page-trail::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.phone-page::-webkit-scrollbar-track,
+.app-page::-webkit-scrollbar-track,
+.app-content::-webkit-scrollbar-track,
+.tab-transition-stack::-webkit-scrollbar-track,
+.tab-layer::-webkit-scrollbar-track,
+.tab-layer-current::-webkit-scrollbar-track,
+.quest-journey-panel::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.phone-page::-webkit-scrollbar-thumb,
+.app-page::-webkit-scrollbar-thumb,
+.app-content::-webkit-scrollbar-thumb,
+.tab-transition-stack::-webkit-scrollbar-thumb,
+.tab-layer::-webkit-scrollbar-thumb,
+.tab-layer-current::-webkit-scrollbar-thumb,
+.quest-journey-panel::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+
+/* ===== Quest map click callout ===== */
+.quest-map-stage {
+  position: relative;
+  isolation: isolate;
+}
+
+.quest-map-floating-card {
+  position: absolute;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: 8;
+  display: grid;
+  width: 162px;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 7px;
+  padding: 8px 9px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,211,106,.24);
+  background:
+    radial-gradient(circle at 92% 14%, rgba(255,211,106,.14), transparent 34%),
+    linear-gradient(145deg, rgba(20,26,54,.82), rgba(17,23,45,.88));
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 12px 22px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.07);
+  animation: questFeedbackPop .26s ease both;
+}
+
+.quest-map-floating-card strong {
+  display: block;
+  margin-top: 3px;
+  color: #fff;
+  font-size: .64rem;
+  line-height: 1.12;
+}
+
+.quest-map-floating-card p {
+  display: -webkit-box;
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: #aebee2;
+  font-size: .52rem;
+  line-height: 1.28;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.quest-map-floating-card .small-caps {
+  font-size: .48rem;
+  letter-spacing: .1em;
+}
+
+.quest-map-floating-card .mini-action {
+  width: fit-content;
+  min-height: 28px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: #211725;
+  font-size: .56rem;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffd36a, #ff9d5f);
+}
+
+.quest-map-floating-card.done {
+  border-color: rgba(98,242,219,.28);
+  background:
+    radial-gradient(circle at 90% 12%, rgba(98,242,219,.14), transparent 34%),
+    linear-gradient(145deg, rgba(14,42,54,.82), rgba(18,24,48,.88));
+}
+
+.quest-map-floating-card.history {
+  width: 172px;
+}
+
+.quest-map-floating-card.locked {
+  border-color: rgba(255,255,255,.12);
+  background: rgba(15,23,42,.78);
+}
+
+.quest-map-floating-card.locked .mini-action {
+  color: #aebee2;
+  background: rgba(255,255,255,.08);
+}
+
+.quest-callout-cyberbullying-group {
+  top: 58px;
+  left: 154px;
+}
+
+.quest-callout-verbal-teasing {
+  top: 112px;
+  right: 16px;
+}
+
+.quest-callout-social-exclusion {
+  top: 168px;
+  left: 82px;
+}
+
+.quest-callout-threat-message {
+  top: 210px;
+  right: 18px;
+}
+
+/* ===== Quest map unified panel cleanup ===== */
+.quest-map-card {
+  padding: 12px 12px 10px !important;
+  border: 1px solid rgba(255,211,106,.15) !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(45,226,207,.16), transparent 24%),
+    radial-gradient(circle at 86% 20%, rgba(255,211,106,.13), transparent 24%),
+    linear-gradient(145deg, rgba(7,28,43,.84), rgba(18,22,54,.86)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 16px 28px rgba(0,0,0,.14) !important;
+}
+
+.quest-map-card > .quest-topic-head {
+  padding: 0 !important;
+  margin: 0 0 -2px !important;
+  align-items: center;
+}
+
+.quest-topic-inline {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quest-topic-head .small-caps.mint {
+  color: #ffe08a !important;
+  font-size: .58rem;
+  letter-spacing: .13em;
+}
+
+.quest-topic-trophy {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 999px !important;
+  background: rgba(255,211,106,.10) !important;
+  border-color: rgba(255,211,106,.18) !important;
+  box-shadow: none !important;
+}
+
+.quest-map-stage {
+  margin-top: 0;
+}
+
+.quest-map-trail.quest-page-trail {
+  min-height: 252px !important;
+  margin: 0 -4px -2px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.quest-page-trail .quest-trail-svg {
+  inset: 0 0 0 !important;
+  height: 254px !important;
+}
+
+/* ===== Quest connected map + recap cleanup ===== */
+.quest-journey-panel {
+  gap: 0 !important;
+}
+
+.quest-hero-card {
+  margin-bottom: 10px !important;
+}
+
+.quest-map-card {
+  padding: 12px 12px 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 24px 24px 0 0 !important;
+  overflow: visible !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+
+.quest-map-card::after {
+  content: '';
+  display: block;
+  height: 0;
+}
+
+.quest-map-stage {
+  overflow: visible;
+}
+
+.quest-map-trail.quest-page-trail {
+  min-height: 288px !important;
+  margin: 0 -4px 0 !important;
+  overflow: visible !important;
+}
+
+.quest-page-trail .quest-trail-svg {
+  height: 286px !important;
+}
+
+.quest-page-trail .quest-node-3 {
+  top: 176px !important;
+}
+
+.quest-page-trail .quest-node-4 {
+  top: 228px !important;
+}
+
+.quest-callout-social-exclusion {
+  top: 178px !important;
+}
+
+.quest-callout-threat-message {
+  top: 224px !important;
+}
+
+.weekly-points-card {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+  border-radius: 0 0 24px 24px !important;
+  background:
+    linear-gradient(180deg, rgba(18,22,54,.86), rgba(11,18,36,.78)) !important;
+}
+
+/* ===== Quest full-bleed map section ===== */
+.quest-map-card,
+.weekly-points-card {
+  width: calc(100% + 32px) !important;
+  margin-left: -16px !important;
+  margin-right: -16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.quest-map-card {
+  padding: 14px 16px 0 !important;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(45,226,207,.15), transparent 26%),
+    radial-gradient(circle at 88% 16%, rgba(255,211,106,.12), transparent 24%),
+    linear-gradient(145deg, rgba(7,28,43,.88), rgba(18,22,54,.88)) !important;
+}
+
+.quest-map-card > .quest-topic-head {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.quest-map-trail.quest-page-trail {
+  margin: 0 -16px 0 !important;
+  min-height: 292px !important;
+}
+
+.quest-page-trail .quest-trail-svg {
+  height: 290px !important;
+}
+
+.weekly-points-card {
+  padding: 13px 16px 15px !important;
+  background:
+    linear-gradient(180deg, rgba(18,22,54,.88) 0%, rgba(11,18,36,.82) 100%) !important;
+}
+
+/* ===== Quest no-card edge polish ===== */
+.quest-map-card,
+.weekly-points-card {
+  align-self: flex-start !important;
+  width: calc(100% + 32px) !important;
+  margin: 0 !important;
+  transform: translateX(-16px);
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.quest-map-card {
+  padding: 12px 16px 0 !important;
+}
+
+.quest-map-card::after {
+  display: none !important;
+}
+
+.quest-map-card > .quest-topic-head {
+  padding: 0 0 0 !important;
+  margin: 0 !important;
+}
+
+.quest-map-stage {
+  background: transparent !important;
+}
+
+.quest-map-trail.quest-page-trail {
+  width: calc(100% + 32px) !important;
+  margin: 0 -16px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.weekly-points-card {
+  padding: 12px 16px 14px !important;
+}
+
+/* ===== Quest centered compact polish ===== */
+.quest-journey-panel {
+  gap: 0 !important;
+}
+
+.quest-hero-card {
+  width: 100% !important;
+  margin: 0 auto 6px !important;
+  padding: 12px 13px !important;
+  border-radius: 22px !important;
+}
+
+.quest-hero-card h3 {
+  margin: 3px 0 2px !important;
+  font-size: .98rem !important;
+}
+
+.quest-hero-card p {
+  font-size: .7rem !important;
+}
+
+.quest-points-pill {
+  min-width: 58px !important;
+  min-height: 58px !important;
+  border-radius: 20px !important;
+}
+
+.quest-points-pill strong {
+  font-size: .88rem !important;
+}
+
+.quest-points-pill span {
+  font-size: .62rem !important;
+}
+
+.quest-map-card,
+.weekly-points-card {
+  align-self: stretch !important;
+  width: 100% !important;
+  margin: 0 !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.quest-map-card {
+  padding: 4px 0 0 !important;
+}
+
+.quest-map-card > .quest-topic-head {
+  padding: 0 !important;
+  margin: 0 0 -8px !important;
+}
+
+.quest-topic-head .small-caps.mint {
+  font-size: .54rem !important;
+}
+
+.quest-topic-trophy {
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.quest-map-trail.quest-page-trail {
+  width: 100% !important;
+  min-height: 252px !important;
+  margin: 0 !important;
+}
+
+.quest-page-trail .quest-trail-svg {
+  height: 250px !important;
+}
+
+.quest-page-trail .quest-node-1 {
+  top: 34px !important;
+}
+
+.quest-page-trail .quest-node-2 {
+  top: 90px !important;
+}
+
+.quest-page-trail .quest-node-3 {
+  top: 151px !important;
+}
+
+.quest-page-trail .quest-node-4 {
+  top: 202px !important;
+}
+
+.quest-callout-cyberbullying-group {
+  top: 52px !important;
+}
+
+.quest-callout-verbal-teasing {
+  top: 98px !important;
+}
+
+.quest-callout-social-exclusion {
+  top: 156px !important;
+}
+
+.quest-callout-threat-message {
+  top: 204px !important;
+}
+
+.weekly-points-card {
+  padding: 0 0 4px !important;
+}
+
+.weekly-points-head {
+  margin-bottom: 2px !important;
+}
+
+.weekly-points-chart {
+  min-height: 92px !important;
+  gap: 6px !important;
+  padding-top: 8px !important;
+}
+
+.weekly-point-track {
+  height: 62px !important;
+}
+
+.weekly-point-track::before,
+.weekly-point-fill {
+  width: 18px !important;
+}
+
+.weekly-points-extremes {
+  margin-top: 2px !important;
+}
+
+/* ===== Quest recap extended fill ===== */
+.weekly-points-card {
+  min-height: 172px !important;
+  padding-bottom: 16px !important;
+}
+
+.weekly-points-chart {
+  min-height: 126px !important;
+  gap: 7px !important;
+  padding-top: 12px !important;
+}
+
+.weekly-point-bar {
+  gap: 5px !important;
+}
+
+.weekly-point-track {
+  height: 96px !important;
+}
+
+.weekly-point-day {
+  font-size: .58rem !important;
+  line-height: 1 !important;
+}
+
+.weekly-points-extremes {
+  margin-top: 7px !important;
+  gap: 6px !important;
+}
+
+.weekly-points-extremes span {
+  padding: 5px 8px !important;
+  font-size: .6rem !important;
+}
+
+/* ===== Home hero brighter signature accent ===== */
+.app-hero-card {
+  border-color: rgba(98,242,219,.38) !important;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(45,226,207,.34), transparent 31%),
+    radial-gradient(circle at 78% 10%, rgba(139,124,255,.30), transparent 30%),
+    radial-gradient(circle at 84% 82%, rgba(255,207,74,.24), transparent 31%),
+    linear-gradient(145deg, rgba(7,31,58,.98), rgba(18,25,78,.95)) !important;
+  box-shadow:
+    0 0 0 1px rgba(98,242,219,.10),
+    0 20px 42px rgba(45,226,207,.14),
+    inset 0 1px 0 rgba(255,255,255,.11) !important;
+}
+
+.app-hero-card::before {
+  height: 5px !important;
+  background: linear-gradient(90deg, #25f2df 0%, #5aa8ff 34%, #8b7cff 66%, #ffcf4a 100%) !important;
+  box-shadow: 0 0 22px rgba(98,242,219,.42);
+}
+
+.app-hero-card .small-caps.mint {
+  color: #8efff0 !important;
+  font-size: .66rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-shadow: 0 0 16px rgba(98,242,219,.40);
+}
+
+.hero-copy h2 {
+  color: #fff;
+  font-size: 1.42rem;
+  letter-spacing: -.035em;
+  text-shadow: 0 10px 28px rgba(139,124,255,.24);
+}
+
+.hero-avatar-wrap {
+  background: linear-gradient(145deg, #25f2df, #5aa8ff 42%, #8b7cff 72%, #ff6f9a) !important;
+  box-shadow:
+    0 0 0 6px rgba(98,242,219,.08),
+    0 0 30px rgba(98,242,219,.34),
+    0 16px 34px rgba(91,124,255,.34) !important;
+}
+
+.home-score-main {
+  border-color: rgba(255,207,74,.46) !important;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(255,207,74,.46), transparent 42%),
+    linear-gradient(145deg, rgba(122,77,26,.86), rgba(37,27,74,.82)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 14px 28px rgba(255,207,74,.12) !important;
+}
+
+.home-score-main strong {
+  color: #ffe49a !important;
+  text-shadow: 0 0 18px rgba(255,207,74,.34);
+}
+
+.home-score-progress {
+  border-color: rgba(98,242,219,.36) !important;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(98,242,219,.32), transparent 38%),
+    radial-gradient(circle at 86% 80%, rgba(139,124,255,.20), transparent 40%),
+    linear-gradient(145deg, rgba(8,64,76,.84), rgba(31,30,88,.78)) !important;
+}
+
+.home-score-track {
+  background: rgba(255,255,255,.14) !important;
+}
+
+.home-score-track i {
+  background: linear-gradient(90deg, #25f2df, #5aa8ff 42%, #8b7cff 70%, #ffcf4a) !important;
+  box-shadow: 0 0 20px rgba(98,242,219,.45), 0 0 18px rgba(255,207,74,.22) !important;
+}
+
+.home-score-chip-row span {
+  border-color: rgba(98,242,219,.24) !important;
+  background: linear-gradient(135deg, rgba(45,226,207,.16), rgba(139,124,255,.14)) !important;
+  color: #eefcff !important;
+  box-shadow: 0 10px 20px rgba(45,226,207,.09), inset 0 1px 0 rgba(255,255,255,.08) !important;
 }

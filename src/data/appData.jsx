@@ -219,16 +219,16 @@ export const rolePlayQuest = {
     {
       id: 'cyberbullying-group',
       title: 'Cyberbullying di Grup Kelas',
-      status: 'Aktif',
-      state: 'active',
-      detail: 'Masuk ke simulasi percakapan 5 babak sebagai korban yang menerima ejekan di grup kelas.',
+      status: 'Selesai',
+      state: 'done',
+      detail: 'Game sudah dikerjakan. Lihat kembali ringkasan respons dan poin yang kamu dapatkan.',
     },
     {
       id: 'verbal-teasing',
       title: 'Ejekan Verbal',
-      status: 'Terkunci',
-      state: 'locked',
-      detail: 'Topik berikutnya tentang merespons ejekan langsung secara aman.',
+      status: 'Aktif',
+      state: 'active',
+      detail: 'Latihan memilih respons aman saat menerima ejekan langsung dari teman.',
     },
     {
       id: 'social-exclusion',

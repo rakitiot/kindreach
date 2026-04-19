@@ -200,9 +200,9 @@ const featureTabMap = {
   quest: 'quest',
 }
 
-function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel = 'Peta perjalanan Kind-Quest' }) {
+function QuestTrailMap({ nodes, selectedId, onSelect, onBackgroundClick, className = '', ariaLabel = 'Peta perjalanan Kind-Quest' }) {
   return (
-    <div className={`quest-map-trail ${className}`.trim()} aria-label={ariaLabel}>
+    <div className={`quest-map-trail ${className}`.trim()} aria-label={ariaLabel} onClick={onBackgroundClick}>
       <svg className="quest-trail-svg" viewBox="0 0 320 430" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="questRoadGradient" x1="0" y1="0" x2="0" y2="1">
@@ -227,7 +227,10 @@ function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel 
           key={node.id}
           type="button"
           className={`quest-map-node trail-node quest-node-${index + 1} ${node.state} ${node.id === selectedId ? 'selected' : ''}`}
-          onClick={() => onSelect?.(node.id)}
+          onClick={(event) => {
+            event.stopPropagation()
+            onSelect?.(node.id)
+          }}
           aria-label={`${node.title} - ${node.status}`}
         >
           <div className="quest-map-marker">
@@ -235,7 +238,7 @@ function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel 
           </div>
           <div className="quest-map-copy">
             <strong>{node.title}</strong>
-            <p>{node.status} - {node.meta}</p>
+            <p>{node.meta ? `${node.status} - ${node.meta}` : node.status}</p>
           </div>
         </button>
       ))}
@@ -643,8 +646,9 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
 }
 
 function QuestTab({ user, onResolveQuest, onGameModeChange }) {
-  const [selectedModeId, setSelectedModeId] = useState('victim')
   const [selectedQuestId, setSelectedQuestId] = useState(rolePlayQuest.mapNodes[0].id)
+  const [questMapCalloutId, setQuestMapCalloutId] = useState('')
+  const [questMapCalloutMode, setQuestMapCalloutMode] = useState('summary')
   const [isSimulationOpen, setIsSimulationOpen] = useState(false)
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
   const [selectedChoiceId, setSelectedChoiceId] = useState('')
@@ -659,7 +663,6 @@ function QuestTab({ user, onResolveQuest, onGameModeChange }) {
   const highestPoint = recordedPointItems.reduce((highest, item) => item.points > highest.points ? item : highest, recordedPointItems[0])
   const lowestPoint = recordedPointItems.reduce((lowest, item) => item.points < lowest.points ? item : lowest, recordedPointItems[0])
   const maxDailyPoints = Math.max(...recordedPointItems.map((item) => item.points), 1)
-  const activeMode = rolePlayQuest.modes.find((mode) => mode.id === selectedModeId) || rolePlayQuest.modes.find((mode) => mode.id === 'victim') || rolePlayQuest.modes[0]
   const questMapProgress = rolePlayQuest.mapNodes.map((node) => {
     if (completedQuestIds.includes(node.id)) {
       return { ...node, status: 'Selesai', state: 'done' }
@@ -669,6 +672,7 @@ function QuestTab({ user, onResolveQuest, onGameModeChange }) {
   })
   const selectedQuestIndex = Math.max(0, questMapProgress.findIndex((node) => node.id === selectedQuestId))
   const selectedQuestNode = questMapProgress[selectedQuestIndex] || questMapProgress[0]
+  const questMapCalloutNode = questMapProgress.find((node) => node.id === questMapCalloutId)
   const selectedQuestLocked = selectedQuestNode.state === 'locked'
   const currentScene = rolePlayQuest.stages[currentSceneIndex] || rolePlayQuest.stages[0]
   const selectedChoice = currentScene.choices.find((choice) => choice.id === selectedChoiceId)
@@ -678,6 +682,21 @@ function QuestTab({ user, onResolveQuest, onGameModeChange }) {
   const maxSessionPoints = rolePlayQuest.stages.reduce((total, scene) => total + Math.max(...scene.choices.map((choice) => choice.points), 0), 0)
   const finalLevel = sessionPoints >= maxSessionPoints * 0.78 ? 'Aman dan Empatik' : sessionPoints >= maxSessionPoints * 0.48 ? 'Cukup Aman, Perlu Ditingkatkan' : 'Perlu Pendampingan Aman'
   const finalBadge = sessionPoints >= maxSessionPoints * 0.78 ? 'Penyintas Aman' : 'Pejuang Refleksi'
+  const savedQuestHistory = {
+    'cyberbullying-group': {
+      points: 430,
+      level: 'Aman dan Empatik',
+      badge: 'Penyintas Aman',
+    },
+  }
+  const questMapCalloutHistory = questMapCalloutNode?.state === 'done'
+    ? savedQuestHistory[questMapCalloutNode.id] || {
+      points: sessionPoints,
+      level: finalLevel,
+      badge: finalBadge,
+    }
+    : null
+  const isQuestHistoryCallout = questMapCalloutMode === 'history' && questMapCalloutHistory
 
   useEffect(() => {
     resetSimulationState()
@@ -718,16 +737,46 @@ function QuestTab({ user, onResolveQuest, onGameModeChange }) {
   }
 
   function startSimulation() {
-    if (selectedQuestLocked || activeMode.locked) {
+    if (selectedQuestLocked) {
       return
     }
 
+    setQuestMapCalloutMode('summary')
     setCurrentSceneIndex(0)
     setSelectedChoiceId('')
     setSceneFeedback('')
     setSessionPoints(0)
     setIsMissionComplete(false)
     setIsSimulationOpen(true)
+  }
+
+  function selectQuestMapNode(nodeId) {
+    setSelectedQuestId(nodeId)
+    setQuestMapCalloutId(nodeId)
+    setQuestMapCalloutMode('summary')
+  }
+
+  function hideQuestMapCallout() {
+    setQuestMapCalloutId('')
+    setQuestMapCalloutMode('summary')
+  }
+
+  function handleQuestCalloutAction() {
+    if (!questMapCalloutNode || questMapCalloutNode.state === 'locked') {
+      return
+    }
+
+    if (questMapCalloutNode.state === 'done') {
+      if (questMapCalloutMode === 'history') {
+        hideQuestMapCallout()
+        return
+      }
+
+      setQuestMapCalloutMode('history')
+      return
+    }
+
+    startSimulation()
   }
 
   function selectChoice(choice) {
@@ -906,51 +955,54 @@ function QuestTab({ user, onResolveQuest, onGameModeChange }) {
       </div>
 
       <div className="quest-map-card">
-        <div className="quest-mode-slider" aria-label="Pilih mode KindQuest">
-          {rolePlayQuest.modes.map((mode) => (
-            <button
-              key={mode.id}
-              type="button"
-              className={`quest-mode-card ${mode.id === activeMode.id ? 'active' : ''} ${mode.locked ? 'locked' : ''}`.trim()}
-              onClick={() => !mode.locked && setSelectedModeId(mode.id)}
-              aria-pressed={mode.id === activeMode.id}
-              aria-disabled={mode.locked}
-            >
-              <span>{mode.status}</span>
-              <strong>{mode.title}</strong>
-              <small>{mode.label}</small>
-            </button>
-          ))}
-        </div>
-
         <div className="weekly-points-head quest-topic-head">
-          <div>
-            <span className="small-caps mint">Peta topik</span>
-            <strong>{activeMode.title}</strong>
+          <div className="quest-topic-inline">
+            <span className="small-caps mint">Peta Quest</span>
           </div>
-          <div className="quest-topic-trophy">
+          <div className="quest-topic-trophy" aria-hidden="true">
             <Trophy size={17} />
           </div>
         </div>
 
-        <QuestTrailMap
-          nodes={questMapProgress}
-          selectedId={selectedQuestNode.id}
-          onSelect={setSelectedQuestId}
-          className="quest-page-trail"
-        />
+        <div className="quest-map-stage">
+          <QuestTrailMap
+            nodes={questMapProgress}
+            selectedId={selectedQuestNode.id}
+            onSelect={selectQuestMapNode}
+            onBackgroundClick={hideQuestMapCallout}
+            className="quest-page-trail"
+          />
 
-        <div className={`quest-map-detail-card ${selectedQuestNode.state}`}>
-          <div>
-            <span className="small-caps amber">{selectedQuestNode.status}</span>
-            <strong>{selectedQuestNode.title}</strong>
-            <p>{selectedQuestNode.detail}</p>
+          {questMapCalloutNode && (
+            <div
+              className={`quest-map-floating-card ${questMapCalloutNode.state} quest-callout-${questMapCalloutNode.id} ${isQuestHistoryCallout ? 'history' : ''}`}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div>
+                <span className="small-caps amber">{isQuestHistoryCallout ? 'Riwayat game' : questMapCalloutNode.status}</span>
+                <strong>{questMapCalloutNode.title}</strong>
+                {isQuestHistoryCallout ? (
+                  <p>{questMapCalloutHistory.points} pts - {questMapCalloutHistory.level}</p>
+                ) : (
+                  <p>{questMapCalloutNode.detail}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                className="mini-action"
+                onClick={handleQuestCalloutAction}
+                disabled={questMapCalloutNode.state === 'locked'}
+              >
+                {questMapCalloutNode.state === 'locked'
+                  ? 'Belum terbuka'
+                  : questMapCalloutNode.state === 'done'
+                    ? isQuestHistoryCallout ? 'Tutup' : 'Lihat riwayat game'
+                    : 'Mulai game'}
+              </button>
+            </div>
+          )}
           </div>
-          <button type="button" className="mini-action" onClick={startSimulation} disabled={selectedQuestLocked}>
-            {selectedQuestLocked ? 'Belum terbuka' : 'Mulai game'}
-          </button>
         </div>
-      </div>
 
       <div className="weekly-points-card">
         <div className="weekly-points-head">
