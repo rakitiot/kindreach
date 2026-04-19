@@ -36,15 +36,20 @@ export default function LoginScreen({
   const [selectedLoginAccountId, setSelectedLoginAccountId] = useState('')
   const [accountCode, setAccountCode] = useState('')
   const [loginError, setLoginError] = useState('')
+  const availableAccounts = useMemo(
+    () => accounts.filter((account) => account.role === 'Siswa'),
+    [accounts]
+  )
+  const primaryAccount = availableAccounts[0] || accounts[0]
 
   const selectedNameAccount = useMemo(
-    () => accounts.find((account) => account.id === selectedLoginAccountId),
-    [accounts, selectedLoginAccountId]
+    () => availableAccounts.find((account) => account.id === selectedLoginAccountId),
+    [availableAccounts, selectedLoginAccountId]
   )
   const fullName = selectedNameAccount?.name || ''
   const verifiedAccount = useMemo(
-    () => findVerifiedAccount(accounts, institution, schoolName, fullName, accountCode),
-    [accountCode, accounts, fullName, institution, schoolName]
+    () => findVerifiedAccount(availableAccounts, institution, schoolName, fullName, accountCode),
+    [accountCode, availableAccounts, fullName, institution, schoolName]
   )
 
   function handleSubmit(event) {
@@ -59,29 +64,16 @@ export default function LoginScreen({
     onLogin(verifiedAccount)
   }
 
-  function fillSchoolName() {
+  function fillCredentials() {
     setLoginError('')
 
-    if (!schoolName.trim()) {
-      setSchoolName(institution.name)
+    if (!primaryAccount) {
+      return
     }
-  }
 
-  function applyAccountName(account) {
-    if (!account) return
-
-    setLoginError('')
-    setSelectedLoginAccountId(account.id)
-    setAccountCode('')
-    setSchoolName((currentSchoolName) => currentSchoolName.trim() || account.school || institution.name)
-  }
-
-  function fillAccountCode() {
-    setLoginError('')
-
-    if (!accountCode.trim() && selectedNameAccount) {
-      setAccountCode(selectedNameAccount.accountCode || '')
-    }
+    setSchoolName(primaryAccount.school || institution.name)
+    setSelectedLoginAccountId(primaryAccount.id)
+    setAccountCode(primaryAccount.accountCode || '')
   }
 
   return (
@@ -106,28 +98,28 @@ export default function LoginScreen({
             <input
               value={schoolName}
               onChange={(event) => setSchoolName(event.target.value)}
-              onPointerDown={fillSchoolName}
-              onFocus={fillSchoolName}
-              onClick={fillSchoolName}
+              onPointerDown={fillCredentials}
+              onFocus={fillCredentials}
+              onClick={fillCredentials}
+              readOnly
             />
           </div>
         </label>
 
         <label>
           Nama lengkap
-          <div className="inline-input-icon credential-input">
+          <div
+            className="inline-input-icon credential-input"
+            onPointerDown={fillCredentials}
+          >
             <UserRound size={16} />
-            <select
-              value={selectedLoginAccountId}
-              onChange={(event) => applyAccountName(accounts.find((account) => account.id === event.target.value))}
-            >
-              <option value="" disabled aria-label="Nama lengkap" />
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name} - {account.role}
-                </option>
-              ))}
-            </select>
+            <input
+              value={fullName}
+              onPointerDown={fillCredentials}
+              onFocus={fillCredentials}
+              onClick={fillCredentials}
+              readOnly
+            />
           </div>
         </label>
 
@@ -135,14 +127,14 @@ export default function LoginScreen({
           Kode akun
           <div
             className="inline-input-icon credential-input"
-            onPointerDown={fillAccountCode}
+            onPointerDown={fillCredentials}
           >
             <KeyRound size={16} />
             <input
               value={accountCode}
-              onPointerDown={fillAccountCode}
-              onFocus={fillAccountCode}
-              onClick={fillAccountCode}
+              onPointerDown={fillCredentials}
+              onFocus={fillCredentials}
+              onClick={fillCredentials}
               readOnly
             />
           </div>

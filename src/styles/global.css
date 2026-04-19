@@ -3630,6 +3630,103 @@ button { cursor: pointer; }
   box-shadow: 0 0 14px rgba(255,200,87,.26);
 }
 
+.quest-meter-grid.role-play {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.quest-meter-card.safety .quest-meter-track i {
+  background: linear-gradient(90deg, #7fdcff, #8b7cff);
+  box-shadow: 0 0 14px rgba(127,220,255,.28);
+}
+
+.quest-scene-progress {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 7px;
+  align-items: center;
+  padding: 10px 11px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.quest-scene-progress span,
+.quest-scene-progress strong {
+  color: #dce7ff;
+  font-size: .68rem;
+  font-weight: 900;
+}
+
+.quest-story-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,.08);
+}
+
+.quest-story-track i {
+  display: block;
+  height: 100%;
+  min-width: 10px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffc857, #62f2db, #8b7cff);
+  box-shadow: 0 0 18px rgba(98,242,219,.24);
+  transition: width .42s cubic-bezier(.2, 1, .32, 1);
+}
+
+.quest-dialogue-stack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 9px;
+}
+
+.quest-dialogue-bubble {
+  max-width: 92%;
+  padding: 11px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  animation: questFeedbackPop .36s cubic-bezier(.2, 1.18, .32, 1) both;
+}
+
+.quest-dialogue-bubble span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.quest-dialogue-bubble p {
+  margin: 0;
+  color: #eef4ff;
+  font-size: .82rem;
+  line-height: 1.42;
+}
+
+.quest-dialogue-bubble.antagonist {
+  background: linear-gradient(145deg, rgba(255,122,122,.13), rgba(255,255,255,.045));
+  border-color: rgba(255,122,122,.14);
+}
+
+.quest-dialogue-bubble.antagonist span {
+  color: #ffbdc4;
+}
+
+.quest-dialogue-bubble.victim {
+  justify-self: end;
+  background: linear-gradient(145deg, rgba(98,242,219,.13), rgba(90,143,255,.09));
+  border-color: rgba(98,242,219,.16);
+}
+
+.quest-dialogue-bubble.victim span {
+  color: #8af7e8;
+}
+
 .quest-question-copy {
   position: relative;
   z-index: 1;
@@ -3793,6 +3890,89 @@ button { cursor: pointer; }
   animation: questBadgeUnlock .6s cubic-bezier(.2, 1.32, .32, 1) both;
 }
 
+.quest-next-btn {
+  width: 100%;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.quest-result-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(98,242,219,.18);
+  background:
+    radial-gradient(circle at 86% 12%, rgba(255,200,87,.18), transparent 34%),
+    radial-gradient(circle at 8% 14%, rgba(98,242,219,.16), transparent 34%),
+    rgba(255,255,255,.055);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.quest-result-head h3 {
+  margin: 5px 0 6px;
+  font-size: 1.1rem;
+  line-height: 1.18;
+}
+
+.quest-result-head p {
+  margin: 0;
+  color: #aebee2;
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+.quest-result-score {
+  display: grid;
+  grid-template-columns: .75fr 1.25fr;
+  gap: 8px;
+}
+
+.quest-result-score div {
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.quest-result-score span {
+  display: block;
+  margin-bottom: 5px;
+  color: #aebee2;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.quest-result-score strong {
+  color: #f8fbff;
+  font-size: .95rem;
+  line-height: 1.1;
+}
+
+.quest-result-summary {
+  display: grid;
+  gap: 7px;
+  color: #cbd8f2;
+  font-size: .72rem;
+  line-height: 1.38;
+}
+
+.quest-result-summary span {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.quest-result-summary svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #62f2db;
+}
+
 .quest-feedback-sparkle {
   position: absolute;
   right: 14px;
@@ -3947,6 +4127,7 @@ button { cursor: pointer; }
   .quest-mission-start,
   .quest-question-card,
   .quest-question-card::after,
+  .quest-dialogue-bubble,
   .quest-arcade-option,
   .quest-arcade-option:hover::before,
   .quest-arcade-option:focus-visible::before,
@@ -3960,6 +4141,10 @@ button { cursor: pointer; }
   }
 
   .quest-meter-track i {
+    transition: none;
+  }
+
+  .quest-story-track i {
     transition: none;
   }
 
@@ -5216,12 +5401,76 @@ body {
   gap: 9px;
 }
 
+.home-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 2px;
+  margin-top: 2px;
+}
+
+.home-section-head strong {
+  display: block;
+  margin-top: 3px;
+  color: #f8fbff;
+  font-size: .95rem;
+  line-height: 1.18;
+}
+
 .home-feature-grid .feature-demo-card {
   min-height: 132px;
   padding: 11px;
   border-radius: 20px;
   gap: 6px;
   align-content: start;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1),
+.home-feature-grid .feature-demo-card:nth-child(4) {
+  grid-column: 1 / -1;
+  min-height: 118px;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "top top"
+    "title icon"
+    "text icon"
+    "action action";
+  align-items: center;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-card-top,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-card-top {
+  grid-area: top;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) > strong,
+.home-feature-grid .feature-demo-card:nth-child(4) > strong {
+  grid-area: title;
+  font-size: 1.02rem;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) > p,
+.home-feature-grid .feature-demo-card:nth-child(4) > p {
+  grid-area: text;
+  max-width: 230px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-icon-badge,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 17px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-icon-badge svg,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-icon-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-card-action,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-card-action {
+  grid-area: action;
 }
 
 .feature-card-top {
@@ -5668,6 +5917,70 @@ body {
   font-size: .7rem;
   letter-spacing: .08em;
   text-transform: uppercase;
+}
+
+.quest-game-screen {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.quest-game-screen::before {
+  content: '';
+  position: absolute;
+  inset: -16px -16px 44%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255,200,87,.16), transparent 28%),
+    radial-gradient(circle at 10% 18%, rgba(98,242,219,.16), transparent 30%),
+    linear-gradient(180deg, rgba(37,34,92,.5), transparent);
+  pointer-events: none;
+}
+
+.quest-game-back {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  display: inline-grid;
+  place-items: center;
+  color: #eef4ff;
+  background: rgba(255,255,255,.075);
+  backdrop-filter: blur(14px);
+}
+
+.quest-game-panel {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 0 0 8px;
+  animation: questCardPop .44s cubic-bezier(.2, 1.15, .28, 1) both;
+}
+
+.quest-game-panel .quest-mission-start,
+.quest-game-panel .quest-scene-progress,
+.quest-game-panel .quest-meter-card,
+.quest-game-panel .quest-option-card,
+.quest-game-panel .quest-feedback-card {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 24px rgba(0,0,0,.10);
+}
+
+.quest-game-panel .quest-arcade-head {
+  margin-top: 2px;
+}
+
+.quest-game-result {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0 0 10px;
 }
 
 .weekly-points-card,
@@ -6204,4 +6517,2755 @@ body {
 .quest-map-detail-card .mini-action:disabled {
   opacity: .48;
   cursor: not-allowed;
+}
+
+/* ===== KindReach visual hierarchy polish ===== */
+:root {
+  --kr-mint: #2de2cf;
+  --kr-sky: #5ac8ff;
+  --kr-blue: #4f7cff;
+  --kr-violet: #8b7cff;
+  --kr-rose: #ff4f78;
+  --kr-amber: #ffc857;
+  --kr-lime: #9be870;
+  --kr-card: rgba(255,255,255,.075);
+  --kr-card-strong: rgba(255,255,255,.105);
+  --kr-line: rgba(255,255,255,.12);
+}
+
+.app-page {
+  background:
+    radial-gradient(circle at 92% 4%, rgba(139,124,255,.34), transparent 28%),
+    radial-gradient(circle at 0% 28%, rgba(45,226,207,.18), transparent 26%),
+    radial-gradient(circle at 86% 88%, rgba(255,79,120,.14), transparent 30%),
+    linear-gradient(180deg, #0b1323 0%, #08101b 100%);
+}
+
+.app-header {
+  padding-bottom: 4px;
+}
+
+.app-header-title h2 {
+  text-shadow: 0 10px 22px rgba(0,0,0,.24);
+}
+
+.logout-btn,
+.ghost-back,
+.sos-close-btn.icon-only,
+.quest-game-back {
+  background: rgba(255,255,255,.095);
+  border-color: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 24px rgba(0,0,0,.16);
+}
+
+.app-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(98,242,219,.18);
+  background:
+    radial-gradient(circle at 18% 22%, rgba(45,226,207,.22), transparent 30%),
+    radial-gradient(circle at 90% 16%, rgba(255,200,87,.22), transparent 28%),
+    linear-gradient(145deg, rgba(49,64,168,.42), rgba(19,34,66,.72) 48%, rgba(14,24,48,.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 18px 42px rgba(25,38,105,.24);
+}
+
+.app-hero-card::after {
+  content: '';
+  position: absolute;
+  right: -36px;
+  bottom: -40px;
+  width: 130px;
+  height: 130px;
+  border-radius: 999px;
+  border: 18px solid rgba(255,255,255,.035);
+  pointer-events: none;
+}
+
+.hero-copy,
+.feature-demo-card > *,
+.home-score-panel,
+.home-score-chip-row {
+  position: relative;
+  z-index: 1;
+}
+
+.home-score-main {
+  border-color: rgba(255,200,87,.24);
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255,200,87,.28), transparent 42%),
+    linear-gradient(145deg, rgba(92,61,29,.62), rgba(255,255,255,.055));
+}
+
+.home-score-main strong {
+  color: #fff4c9;
+  text-shadow: 0 0 18px rgba(255,200,87,.22);
+}
+
+.home-score-progress {
+  border-color: rgba(98,242,219,.2);
+  background:
+    radial-gradient(circle at 14% 14%, rgba(98,242,219,.22), transparent 38%),
+    linear-gradient(145deg, rgba(12,48,72,.72), rgba(255,255,255,.05));
+}
+
+.home-score-chip-row span:nth-child(1) {
+  color: #dcfff8;
+  background: rgba(45,226,207,.14);
+  border-color: rgba(45,226,207,.22);
+}
+
+.home-score-chip-row span:nth-child(2) {
+  color: #e8e3ff;
+  background: rgba(139,124,255,.16);
+  border-color: rgba(139,124,255,.23);
+}
+
+.home-score-chip-row span:nth-child(3) {
+  color: #fff2c8;
+  background: rgba(255,200,87,.15);
+  border-color: rgba(255,200,87,.22);
+}
+
+.feature-demo-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255,255,255,.11);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 14px 28px rgba(0,0,0,.13);
+}
+
+.feature-demo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: inherit;
+  opacity: .94;
+}
+
+.feature-demo-card::after {
+  content: '';
+  position: absolute;
+  right: -28px;
+  top: -26px;
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: .11;
+  filter: blur(.2px);
+  pointer-events: none;
+}
+
+.feature-demo-card.teal {
+  color: var(--kr-mint);
+  background: linear-gradient(155deg, rgba(17,97,91,.64), rgba(13,31,54,.82));
+}
+
+.feature-demo-card.violet {
+  color: var(--kr-violet);
+  background: linear-gradient(155deg, rgba(78,60,168,.68), rgba(24,27,63,.86));
+}
+
+.feature-demo-card.rose {
+  color: var(--kr-rose);
+  background: linear-gradient(155deg, rgba(126,39,72,.68), rgba(42,25,55,.86));
+}
+
+.feature-demo-card.amber {
+  color: var(--kr-amber);
+  background: linear-gradient(155deg, rgba(118,80,34,.68), rgba(42,38,37,.86));
+}
+
+.feature-demo-card.teal::before { background: linear-gradient(180deg, var(--kr-mint), var(--kr-sky)); }
+.feature-demo-card.violet::before { background: linear-gradient(180deg, var(--kr-violet), #bd7cff); }
+.feature-demo-card.rose::before { background: linear-gradient(180deg, var(--kr-rose), #ff9ca7); }
+.feature-demo-card.amber::before { background: linear-gradient(180deg, var(--kr-amber), #ff8a57); }
+
+.feature-icon-badge {
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.18);
+  box-shadow: 0 10px 18px rgba(0,0,0,.14);
+}
+
+.home-feature-grid .feature-demo-card span {
+  color: rgba(255,255,255,.82);
+}
+
+.home-feature-grid .feature-demo-card strong {
+  color: #fff;
+}
+
+.bottom-tabbar button {
+  background: rgba(255,255,255,.065);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.bottom-tabbar button.active:nth-child(1) {
+  background: linear-gradient(145deg, rgba(45,226,207,.32), rgba(79,124,255,.28));
+}
+
+.bottom-tabbar button.active:nth-child(2) {
+  background: linear-gradient(145deg, rgba(45,226,207,.26), rgba(21,72,94,.72));
+}
+
+.bottom-tabbar button.active:nth-child(3) {
+  background: linear-gradient(145deg, rgba(139,124,255,.34), rgba(72,45,135,.72));
+}
+
+.bottom-tabbar button.active:nth-child(4) {
+  background: linear-gradient(145deg, rgba(255,79,120,.34), rgba(116,38,73,.72));
+}
+
+.bottom-tabbar button.active:nth-child(5) {
+  background: linear-gradient(145deg, rgba(255,200,87,.34), rgba(139,124,255,.28));
+}
+
+.shield-intro-card {
+  border-color: rgba(45,226,207,.2);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(45,226,207,.24), transparent 38%),
+    linear-gradient(135deg, rgba(13,73,76,.95), rgba(21,31,69,.94));
+}
+
+.shield-flow-panel .shield-typing-box,
+.kindbot-fake-input,
+.report-form select,
+.report-form input,
+.report-form textarea,
+.admin-search-field,
+.admin-sort-field,
+.admin-note-card textarea {
+  border-color: rgba(118,215,255,.16);
+  background: rgba(7,18,36,.58);
+}
+
+.shield-warning-card {
+  border-color: rgba(255,200,87,.28);
+  background: linear-gradient(145deg, rgba(255,200,87,.16), rgba(255,79,120,.10), rgba(255,255,255,.045));
+}
+
+.shield-safe-card {
+  border-color: rgba(45,226,207,.24);
+  background: linear-gradient(145deg, rgba(45,226,207,.14), rgba(79,124,255,.10), rgba(255,255,255,.045));
+}
+
+.kindbot-flow-panel .chat-bubble.bot {
+  background: linear-gradient(145deg, rgba(255,255,255,.095), rgba(118,215,255,.07));
+  border: 1px solid rgba(255,255,255,.07);
+}
+
+.kindbot-flow-panel .chat-bubble.user {
+  background: linear-gradient(145deg, rgba(139,124,255,.56), rgba(45,226,207,.24));
+  box-shadow: 0 14px 28px rgba(45,226,207,.1);
+}
+
+.kindbot-send-chip {
+  background: linear-gradient(135deg, rgba(45,226,207,.72), rgba(139,124,255,.72));
+}
+
+.report-flow-panel .submit-demo,
+.submit-demo {
+  background: linear-gradient(135deg, #ff315d, #ff6b86);
+  box-shadow: 0 16px 30px rgba(255,49,93,.26);
+}
+
+.report-history-heading {
+  border-bottom-color: rgba(255,200,87,.22);
+}
+
+.report-history-heading span {
+  color: #ffe4a6;
+}
+
+.report-card {
+  border-color: rgba(255,255,255,.11);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.078), rgba(255,255,255,.038));
+}
+
+.report-card span,
+.report-mini-step.active {
+  background: rgba(45,226,207,.13);
+  border-color: rgba(45,226,207,.23);
+  color: #dcfff8;
+}
+
+.quest-hero-card,
+.quest-map-card,
+.weekly-points-card {
+  border-color: rgba(255,200,87,.16);
+}
+
+.quest-game-screen::before {
+  inset: -18px -16px 32%;
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255,200,87,.24), transparent 28%),
+    radial-gradient(circle at 10% 18%, rgba(45,226,207,.22), transparent 30%),
+    radial-gradient(circle at 70% 62%, rgba(139,124,255,.18), transparent 28%),
+    linear-gradient(180deg, rgba(37,34,92,.62), transparent);
+}
+
+.quest-game-panel .quest-mission-start {
+  border-color: rgba(255,200,87,.2);
+}
+
+.quest-result-card {
+  border-color: rgba(45,226,207,.2);
+}
+
+.weekly-point-fill {
+  background: linear-gradient(180deg, #bcf4ff, var(--kr-sky) 52%, var(--kr-blue));
+}
+
+.sos-floating-bubble {
+  background: linear-gradient(145deg, #ff244b, #ff5d76);
+  box-shadow: 0 18px 34px rgba(255,36,75,.4);
+}
+
+.admin-page {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(139,124,255,.24), transparent 28%),
+    radial-gradient(circle at 4% 34%, rgba(45,226,207,.12), transparent 26%),
+    linear-gradient(180deg, #0f1730 0%, #09111d 100%);
+}
+
+.admin-summary-card:nth-child(1) {
+  border-color: rgba(45,226,207,.2);
+  background: linear-gradient(145deg, rgba(45,226,207,.14), rgba(255,255,255,.045));
+}
+
+.admin-summary-card:nth-child(2) {
+  border-color: rgba(255,200,87,.2);
+  background: linear-gradient(145deg, rgba(255,200,87,.14), rgba(255,255,255,.045));
+}
+
+.admin-summary-card:nth-child(3) {
+  border-color: rgba(255,79,120,.2);
+  background: linear-gradient(145deg, rgba(255,79,120,.13), rgba(255,255,255,.045));
+}
+
+.admin-summary-card:nth-child(4) {
+  border-color: rgba(139,124,255,.22);
+  background: linear-gradient(145deg, rgba(139,124,255,.15), rgba(255,255,255,.045));
+}
+
+.admin-case-card {
+  border-color: rgba(255,255,255,.1);
+}
+
+.admin-case-card.selected {
+  border-color: rgba(255,200,87,.32);
+  background: linear-gradient(145deg, rgba(255,200,87,.12), rgba(45,226,207,.09));
+}
+
+/* ===== UX hierarchy pass: clickable, status, reward, risk ===== */
+.small-caps {
+  font-size: .58rem;
+  letter-spacing: .14em;
+  opacity: .88;
+}
+
+.panel-head.solid-bottom,
+.shield-flow-panel .panel-head,
+.quest-arcade-head {
+  border-bottom-color: rgba(255,255,255,.11);
+}
+
+.mini-action,
+.panel-head button,
+.admin-case-actions button {
+  min-height: 42px;
+  border-color: rgba(118,215,255,.16);
+  background:
+    linear-gradient(145deg, rgba(118,215,255,.14), rgba(139,124,255,.10)),
+    rgba(255,255,255,.055);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 20px rgba(0,0,0,.12);
+  font-weight: 850;
+}
+
+.mini-action:not(:disabled):active,
+.submit-demo:not(:disabled):active,
+.quest-option-card:not(:disabled):active {
+  transform: translateY(1px) scale(.99);
+}
+
+.submit-demo,
+.quest-next-btn,
+.quest-map-detail-card .mini-action:not(:disabled),
+.admin-note-save {
+  min-height: 48px;
+  border: none;
+  color: #fff;
+  background: linear-gradient(135deg, #ff315d, #ff7b54);
+  box-shadow: 0 16px 32px rgba(255,49,93,.25);
+}
+
+.quest-map-detail-card .mini-action:not(:disabled),
+.quest-next-btn {
+  background: linear-gradient(135deg, #ffc857, #ff8a57);
+  color: #211725;
+}
+
+.feature-demo-card {
+  min-height: 146px;
+  grid-template-rows: auto auto 1fr auto;
+  width: 100%;
+  color: #eef4ff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.feature-card-action {
+  width: fit-content;
+  margin-top: 2px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #12192c !important;
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(255,255,255,.2);
+  font-size: .62rem !important;
+  font-weight: 900;
+  letter-spacing: .02em !important;
+  text-transform: none !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,.14);
+}
+
+.feature-demo-card:focus-visible {
+  outline: 2px solid rgba(255,255,255,.72);
+  outline-offset: 3px;
+}
+
+.feature-demo-card:active {
+  transform: translateY(1px) scale(.992);
+}
+
+.home-score-chip-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.home-score-chip-row svg {
+  flex: 0 0 auto;
+}
+
+.shield-warning-card,
+.quest-arcade-feedback.needs-growth,
+.report-inline-feedback.error {
+  box-shadow: inset 4px 0 0 rgba(255,200,87,.82), 0 14px 26px rgba(255,200,87,.08);
+}
+
+.shield-safe-card,
+.quest-arcade-feedback.best,
+.report-inline-feedback.success {
+  box-shadow: inset 4px 0 0 rgba(45,226,207,.82), 0 14px 26px rgba(45,226,207,.08);
+}
+
+.quest-feedback-points,
+.weekly-points-extremes span,
+.home-score-main small {
+  box-shadow: 0 10px 20px rgba(255,200,87,.08);
+}
+
+.quest-feedback-points {
+  background: linear-gradient(135deg, rgba(255,200,87,.24), rgba(255,138,87,.16));
+  border-color: rgba(255,200,87,.32);
+  color: #fff1bd;
+}
+
+.report-mini-step {
+  border-style: dashed;
+}
+
+.report-mini-step.active {
+  border-style: solid;
+  font-weight: 850;
+}
+
+.admin-case-status {
+  color: #dffdf8;
+  background: rgba(45,226,207,.13);
+  border: 1px solid rgba(45,226,207,.22);
+  font-weight: 850;
+}
+
+.admin-case-card {
+  position: relative;
+}
+
+.admin-case-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(118,215,255,.28);
+}
+
+.admin-case-card.selected::before {
+  background: linear-gradient(180deg, var(--kr-amber), var(--kr-mint));
+}
+
+.quest-map-detail-card.locked::after {
+  content: 'Terkunci';
+  width: fit-content;
+  margin-top: 2px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #d7e1f5;
+  background: rgba(255,255,255,.075);
+  border: 1px dashed rgba(255,255,255,.14);
+  font-size: .58rem;
+  font-weight: 900;
+}
+
+.quest-option-card {
+  border-width: 1.5px;
+}
+
+.quest-option-card span:not(.quest-reward-pop) {
+  font-weight: 760;
+}
+
+.quest-arcade-option.selected {
+  outline: 2px solid rgba(255,200,87,.18);
+  outline-offset: 2px;
+}
+
+.quest-dialogue-bubble.antagonist {
+  box-shadow: inset 3px 0 0 rgba(255,79,120,.72);
+}
+
+.quest-dialogue-bubble.victim {
+  box-shadow: inset -3px 0 0 rgba(45,226,207,.72);
+}
+
+.sos-floating-bubble {
+  min-height: 44px;
+  padding-inline: 15px;
+  outline: 1px solid rgba(255,255,255,.18);
+  outline-offset: -3px;
+}
+
+/* ===== Stronger UX correction: clearer click, reward, danger, and game paths ===== */
+.home-section-head {
+  margin: 6px 2px 0;
+}
+
+.home-section-head::after {
+  content: 'Ketuk kartu';
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #10182a;
+  background: linear-gradient(135deg, rgba(157,232,255,.96), rgba(255,200,87,.94));
+  font-size: .58rem;
+  font-weight: 950;
+  letter-spacing: .02em;
+  box-shadow: 0 12px 22px rgba(90,200,255,.14);
+}
+
+button.feature-demo-card {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.12);
+  font: inherit;
+}
+
+.home-feature-grid.feature-card-grid {
+  gap: 11px;
+}
+
+.home-feature-grid .feature-demo-card {
+  isolation: isolate;
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease,
+    filter .18s ease;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1),
+.home-feature-grid .feature-demo-card:nth-child(4) {
+  min-height: 126px;
+  padding: 14px 14px 13px 16px;
+  border-radius: 28px 20px 28px 20px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(2) {
+  border-radius: 28px 18px 20px 18px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(3) {
+  border-radius: 18px 28px 18px 20px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1)::after,
+.home-feature-grid .feature-demo-card:nth-child(4)::after {
+  right: -20px;
+  top: auto;
+  bottom: -42px;
+  width: 132px;
+  height: 132px;
+  opacity: .15;
+}
+
+.home-feature-grid .feature-demo-card:hover,
+.home-feature-grid .feature-demo-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.24);
+  filter: saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 18px 36px rgba(0,0,0,.20),
+    0 0 0 1px rgba(255,255,255,.04);
+}
+
+.feature-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-card-action::after {
+  content: '->';
+  font-size: .72rem;
+  line-height: 1;
+}
+
+.feature-demo-card.teal .feature-card-action {
+  color: #061a22 !important;
+  background: linear-gradient(135deg, #8efff0, #5ac8ff);
+}
+
+.feature-demo-card.violet .feature-card-action {
+  color: #fff !important;
+  background: linear-gradient(135deg, #8b7cff, #bd7cff);
+}
+
+.feature-demo-card.rose .feature-card-action {
+  color: #fff !important;
+  background: linear-gradient(135deg, #ff315d, #ff7b95);
+}
+
+.feature-demo-card.amber .feature-card-action {
+  color: #211725 !important;
+  background: linear-gradient(135deg, #ffc857, #ffdf8f);
+}
+
+.report-flow-panel .submit-demo,
+.quest-next-btn,
+.admin-note-save {
+  position: relative;
+  overflow: hidden;
+}
+
+.report-flow-panel .submit-demo::after,
+.quest-next-btn::after,
+.admin-note-save::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,.18) 44%, transparent 62%);
+  transform: translateX(-120%);
+  animation: ctaSweep 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.report-security-card {
+  border-left: 4px solid rgba(255,79,120,.82);
+  padding-left: 12px;
+}
+
+.report-form label:focus-within {
+  color: #ffe3ec;
+}
+
+.report-form label:focus-within select,
+.report-form label:focus-within input,
+.report-form label:focus-within textarea {
+  border-color: rgba(255,79,120,.36);
+  box-shadow: 0 0 0 3px rgba(255,79,120,.10);
+}
+
+.shield-intro-card {
+  border-radius: 28px 18px 28px 18px;
+}
+
+.kindbot-flow-panel .chat-bubble.bot:first-child {
+  border-left: 4px solid rgba(139,124,255,.82);
+}
+
+.quest-map-detail-card {
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.quest-map-detail-card.active {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 16px 34px rgba(255,200,87,.12);
+}
+
+.quest-map-detail-card.active:hover {
+  transform: translateY(-2px);
+}
+
+.quest-game-screen {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,200,87,.20), transparent 24%),
+    radial-gradient(circle at 90% 20%, rgba(255,79,120,.15), transparent 28%),
+    radial-gradient(circle at 12% 88%, rgba(45,226,207,.16), transparent 24%),
+    linear-gradient(180deg, #10142b 0%, #08101b 100%);
+}
+
+.quest-game-panel,
+.quest-result-card {
+  border-color: rgba(255,200,87,.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    0 22px 44px rgba(0,0,0,.20);
+}
+
+.admin-case-card {
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.admin-case-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(118,215,255,.22);
+  background: linear-gradient(145deg, rgba(118,215,255,.09), rgba(255,255,255,.045));
+}
+
+.admin-action-hint {
+  border-left: 4px solid rgba(255,200,87,.82);
+  padding-left: 12px;
+}
+
+@keyframes ctaSweep {
+  0%, 58% { transform: translateX(-120%); }
+  78%, 100% { transform: translateX(120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-flow-panel .submit-demo::after,
+  .quest-next-btn::after,
+  .admin-note-save::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .home-feature-grid .feature-demo-card,
+  .quest-map-detail-card,
+  .admin-case-card {
+    transition: none;
+  }
+}
+
+/* ===== Home layout reset: keep the original 2x2 structure ===== */
+.home-feature-grid.feature-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.home-feature-grid .feature-demo-card,
+.home-feature-grid .feature-demo-card:nth-child(1),
+.home-feature-grid .feature-demo-card:nth-child(2),
+.home-feature-grid .feature-demo-card:nth-child(3),
+.home-feature-grid .feature-demo-card:nth-child(4) {
+  grid-column: auto;
+  min-height: 132px;
+  padding: 11px;
+  border-radius: 20px;
+  grid-template-columns: none;
+  grid-template-areas: none;
+  align-items: start;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-card-top,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-card-top,
+.home-feature-grid .feature-demo-card:nth-child(1) > strong,
+.home-feature-grid .feature-demo-card:nth-child(4) > strong,
+.home-feature-grid .feature-demo-card:nth-child(1) > p,
+.home-feature-grid .feature-demo-card:nth-child(4) > p {
+  grid-area: auto;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) > strong,
+.home-feature-grid .feature-demo-card:nth-child(4) > strong {
+  font-size: .86rem;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) > p,
+.home-feature-grid .feature-demo-card:nth-child(4) > p {
+  max-width: none;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-icon-badge,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-icon-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 12px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1) .feature-icon-badge svg,
+.home-feature-grid .feature-demo-card:nth-child(4) .feature-icon-badge svg {
+  width: 15px;
+  height: 15px;
+}
+
+.home-feature-grid .feature-demo-card:nth-child(1)::after,
+.home-feature-grid .feature-demo-card:nth-child(4)::after {
+  right: -28px;
+  top: -26px;
+  bottom: auto;
+  width: 86px;
+  height: 86px;
+  opacity: .11;
+}
+
+/* ===== Compact typography pass: less crowded, same layout ===== */
+.phone-page {
+  font-size: .92rem;
+}
+
+.app-header-title h2 {
+  font-size: 1.26rem;
+  letter-spacing: -.025em;
+}
+
+.small-caps {
+  font-size: .53rem;
+  letter-spacing: .105em;
+}
+
+.app-hero-card,
+.feature-demo-card,
+.shield-flow-panel,
+.kindbot-flow-panel,
+.report-flow-panel,
+.quest-journey-panel,
+.admin-page {
+  letter-spacing: -.01em;
+}
+
+.hero-copy h2 {
+  font-size: 1.26rem;
+  line-height: 1.08;
+}
+
+.hero-copy p,
+.home-score-progress-head span,
+.home-score-chip-row span {
+  font-size: .72rem;
+  line-height: 1.32;
+}
+
+.home-score-main strong {
+  font-size: 1.18rem;
+}
+
+.feature-demo-card strong,
+.home-feature-grid .feature-demo-card strong {
+  font-size: .82rem;
+  line-height: 1.14;
+}
+
+.feature-demo-card p,
+.home-feature-grid .feature-demo-card p {
+  font-size: .65rem;
+  line-height: 1.32;
+}
+
+.feature-demo-card span,
+.home-feature-grid .feature-demo-card span {
+  font-size: .5rem;
+  line-height: 1.12;
+}
+
+.panel-head h3,
+.shield-flow-panel .panel-head h3,
+.kindbot-inline-head h3,
+.quest-hero-card h3,
+.admin-header h2 {
+  font-size: .98rem;
+  line-height: 1.12;
+}
+
+.shield-guidance,
+.shield-flow-panel .shield-guidance,
+.report-security-card p,
+.quest-summary,
+.quest-prompt,
+.admin-command-header p,
+.admin-detail-grid p,
+.admin-action-hint p {
+  font-size: .78rem;
+  line-height: 1.48;
+}
+
+.shield-flow-panel .shield-message,
+.shield-flow-panel .shield-typing-box textarea,
+.report-form label,
+.report-form select,
+.report-form input,
+.report-form textarea,
+.chat-bubble,
+.quest-option-card,
+.quest-dialogue-bubble p,
+.admin-case-card p,
+.admin-case-card small,
+.admin-note-card textarea {
+  font-size: .8rem;
+  line-height: 1.42;
+}
+
+.quest-hero-card {
+  padding: 12px;
+}
+
+.quest-hero-card h3 {
+  margin: 3px 0;
+}
+
+.quest-hero-card p,
+.quest-map-detail-card p,
+.weekly-point-day,
+.admin-summary-card span {
+  font-size: .68rem;
+  line-height: 1.34;
+}
+
+.quest-points-pill {
+  min-width: 58px;
+  min-height: 58px;
+  border-radius: 20px;
+}
+
+.quest-points-pill strong {
+  font-size: .88rem;
+}
+
+.quest-map-detail-card strong,
+.admin-case-title-row strong,
+.admin-detail-grid strong,
+.admin-section-head strong {
+  font-size: .82rem;
+  line-height: 1.18;
+}
+
+.quest-map-detail-card .mini-action,
+.admin-case-actions button,
+.mini-action,
+.submit-demo {
+  font-size: .78rem;
+}
+
+.weekly-points-head strong {
+  font-size: .82rem;
+}
+
+.weekly-points-extremes span,
+.admin-case-status,
+.chip {
+  font-size: .6rem;
+}
+
+.admin-summary-card strong {
+  font-size: 1.05rem;
+}
+
+.admin-summary-card {
+  gap: 6px;
+}
+
+/* ===== Report one-screen form pass ===== */
+.report-flow-panel {
+  gap: 7px;
+}
+
+.report-intro-card .panel-head {
+  margin-bottom: 0;
+  padding-bottom: 7px;
+}
+
+.report-intro-card .panel-head h3 {
+  margin-top: 2px;
+  font-size: .94rem;
+  line-height: 1.08;
+}
+
+.report-intro-card .chip {
+  padding: 6px 8px;
+  font-size: .56rem;
+}
+
+.report-intro-card .report-security-card {
+  margin-top: 7px;
+  padding-left: 10px;
+}
+
+.report-security-card strong {
+  margin-bottom: 2px;
+  font-size: .76rem;
+  line-height: 1.18;
+}
+
+.report-intro-card .report-security-card p,
+.report-security-card p {
+  font-size: .66rem;
+  line-height: 1.32;
+}
+
+.report-form-card,
+.report-form {
+  gap: 6px;
+}
+
+.report-form label {
+  gap: 4px;
+  font-size: .72rem;
+  line-height: 1.14;
+}
+
+.report-form select,
+.report-form input,
+.report-form textarea {
+  min-height: 34px;
+  border-radius: 11px;
+  padding: 8px 10px;
+  font-size: .76rem;
+  line-height: 1.2;
+}
+
+.report-form textarea {
+  min-height: 52px;
+  max-height: 58px;
+  resize: none;
+}
+
+.report-upload-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 3px 8px;
+}
+
+.report-upload-box input[type='file'] {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 86px;
+  min-height: 30px;
+  margin-top: 0;
+  padding: 0;
+  color: transparent;
+  border: 0;
+  background: transparent;
+}
+
+.report-upload-box input[type='file']::file-selector-button {
+  height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff315d, #ff7b95);
+  font-size: .66rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.report-upload-note {
+  grid-column: 1;
+  margin-top: 0;
+  font-size: .64rem;
+  line-height: 1.2;
+}
+
+.report-form .report-anon-toggle {
+  min-height: 20px;
+  margin-top: 0;
+  gap: 7px;
+  font-size: .72rem;
+}
+
+.report-form .report-anon-toggle input {
+  width: 14px;
+  height: 14px;
+}
+
+.report-flow-panel .submit-demo,
+.submit-demo {
+  min-height: 42px;
+  margin-top: 1px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-size: .82rem;
+}
+
+/* ===== KindQuest role-play game cleanup ===== */
+.quest-game-screen {
+  gap: 9px;
+}
+
+.quest-game-panel {
+  gap: 9px;
+}
+
+.quest-game-panel .quest-mission-start {
+  min-height: 0;
+  padding: 9px 11px;
+  border-radius: 17px;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(255,200,87,.18), transparent 34%),
+    linear-gradient(135deg, rgba(12,43,58,.78), rgba(31,31,78,.78));
+}
+
+.quest-mission-start span {
+  font-size: .52rem;
+  letter-spacing: .12em;
+}
+
+.quest-mission-start strong {
+  font-size: .76rem;
+  line-height: 1.14;
+}
+
+.quest-game-panel .quest-arcade-head {
+  margin-top: 0;
+  padding-bottom: 8px;
+}
+
+.quest-arcade-head h3 {
+  font-size: .98rem;
+  line-height: 1.1;
+}
+
+.quest-level-chip {
+  min-width: 54px;
+  padding: 7px 8px;
+  border-radius: 14px;
+}
+
+.quest-scene-progress {
+  padding: 8px 10px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255,200,87,.10), rgba(98,242,219,.075)),
+    rgba(255,255,255,.035);
+}
+
+.quest-scene-progress span,
+.quest-scene-progress strong {
+  font-size: .6rem;
+}
+
+.quest-story-track {
+  height: 6px;
+}
+
+.quest-dialogue-stack {
+  gap: 7px;
+  margin-top: 1px;
+}
+
+.quest-dialogue-bubble {
+  position: relative;
+  max-width: 94%;
+  padding: 10px 12px 10px 32px;
+  border-radius: 16px;
+}
+
+.quest-dialogue-bubble::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 15px;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 16px currentColor;
+}
+
+.quest-dialogue-bubble span {
+  margin-bottom: 4px;
+  font-size: .5rem;
+  letter-spacing: .085em;
+}
+
+.quest-dialogue-bubble p {
+  font-size: .77rem;
+  line-height: 1.38;
+}
+
+.quest-dialogue-bubble.victim {
+  padding-left: 12px;
+  padding-right: 32px;
+}
+
+.quest-dialogue-bubble.victim::before {
+  left: auto;
+  right: 12px;
+}
+
+.quest-question-copy {
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 15px;
+  background: rgba(98,242,219,.055);
+  border: 1px solid rgba(98,242,219,.12);
+}
+
+.quest-question-copy .small-caps {
+  color: #75f5df;
+}
+
+.quest-prompt {
+  font-size: .76rem;
+  line-height: 1.36;
+}
+
+.quest-option-list {
+  gap: 7px;
+}
+
+.quest-option-card {
+  min-height: 54px;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 11px;
+  border-radius: 15px;
+}
+
+.quest-option-card > span:not(.quest-choice-index):not(.quest-reward-pop) {
+  padding-right: 44px;
+  font-size: .76rem;
+  line-height: 1.28;
+}
+
+.quest-choice-index {
+  flex: 0 0 auto;
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  display: inline-grid;
+  place-items: center;
+  color: #dffdf8;
+  background: rgba(98,242,219,.12);
+  border: 1px solid rgba(98,242,219,.22);
+  font-size: .7rem !important;
+  font-weight: 950 !important;
+  line-height: 1;
+}
+
+.quest-arcade-option:hover .quest-choice-index,
+.quest-arcade-option:focus-visible .quest-choice-index {
+  color: #071625;
+  background: linear-gradient(135deg, #8efff0, #7fdcff);
+}
+
+.quest-arcade-option.selected .quest-choice-index {
+  color: #211725;
+  background: linear-gradient(135deg, #ffc857, #ffdf8f);
+  border-color: rgba(255,200,87,.5);
+  animation: questHeartBounce .72s ease both;
+}
+
+.quest-reward-pop {
+  top: 9px;
+  right: 9px;
+  padding: 4px 7px;
+  font-size: .54rem;
+}
+
+.quest-arcade-feedback {
+  padding: 11px 12px;
+  border-radius: 16px;
+  gap: 8px;
+}
+
+.quest-arcade-feedback strong {
+  font-size: .82rem;
+}
+
+.quest-arcade-feedback p {
+  font-size: .72rem;
+  line-height: 1.36;
+}
+
+.quest-feedback-points {
+  margin-top: 6px;
+  padding: 4px 7px;
+  font-size: .6rem;
+}
+
+.quest-next-btn {
+  min-height: 42px;
+  border-radius: 14px;
+}
+
+.quest-result-card {
+  gap: 10px;
+}
+
+/* ===== KindQuest role-play scene polish ===== */
+.quest-game-screen {
+  gap: 7px;
+  padding-top: 0;
+}
+
+.quest-game-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 13px;
+  margin-bottom: -2px;
+}
+
+.quest-game-panel {
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.quest-game-hud {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.1);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(98,242,219,.18), transparent 35%),
+    radial-gradient(circle at 92% 12%, rgba(255,200,87,.18), transparent 35%),
+    linear-gradient(135deg, rgba(12,35,58,.88), rgba(32,31,80,.86));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 14px 26px rgba(0,0,0,.14);
+}
+
+.quest-game-title {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.quest-game-title span {
+  color: #62f2db;
+  font-size: .5rem;
+  font-weight: 950;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.quest-game-title strong {
+  color: #f8fbff;
+  font-size: .82rem;
+  line-height: 1.16;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quest-stage-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  padding: 2px 2px 1px;
+}
+
+.quest-stage-strip span {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.quest-stage-strip span.done {
+  background: linear-gradient(90deg, rgba(98,242,219,.78), rgba(127,220,255,.72));
+  box-shadow: 0 0 12px rgba(98,242,219,.22);
+}
+
+.quest-stage-strip span.active {
+  background: linear-gradient(90deg, #ffc857, #ffdf8f);
+  box-shadow: 0 0 14px rgba(255,200,87,.3);
+}
+
+.quest-game-panel .quest-arcade-head {
+  margin: 2px 0 0;
+  padding: 0 2px 8px;
+}
+
+.quest-arcade-head h3 {
+  margin-top: 2px;
+}
+
+.quest-level-chip {
+  min-width: 50px;
+  padding: 6px 8px;
+  border-radius: 13px;
+}
+
+.quest-level-chip strong {
+  font-size: .82rem;
+}
+
+.quest-dialogue-stack {
+  padding: 2px 0;
+}
+
+.quest-dialogue-bubble {
+  max-width: 93%;
+  min-height: 58px;
+  border-radius: 18px;
+}
+
+.quest-dialogue-bubble::before {
+  content: '!';
+  top: 10px;
+  left: 9px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 950;
+  box-shadow: 0 0 0 4px rgba(255,122,122,.08), 0 0 16px rgba(255,122,122,.16);
+}
+
+.quest-dialogue-bubble.victim::before {
+  content: 'K';
+  right: 9px;
+  left: auto;
+  box-shadow: 0 0 0 4px rgba(98,242,219,.08), 0 0 16px rgba(98,242,219,.18);
+}
+
+.quest-dialogue-bubble.antagonist {
+  border-top-left-radius: 8px;
+}
+
+.quest-dialogue-bubble.victim {
+  border-top-right-radius: 8px;
+}
+
+.quest-question-copy {
+  border-left: 3px solid rgba(98,242,219,.66);
+}
+
+.quest-option-card {
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr);
+}
+
+.quest-option-card > span:not(.quest-choice-index):not(.quest-reward-pop) {
+  align-self: center;
+}
+
+.quest-arcade-option.selected {
+  transform: translateY(-1px);
+}
+
+.quest-arcade-option.dimmed {
+  opacity: .42;
+}
+
+.quest-arcade-feedback {
+  border-left: 4px solid rgba(98,242,219,.72);
+}
+
+.quest-arcade-feedback.needs-growth {
+  border-left-color: rgba(255,200,87,.78);
+}
+
+.quest-next-btn {
+  margin-top: 1px;
+  box-shadow: 0 14px 26px rgba(255,200,87,.18);
+}
+
+/* ===== KindQuest role-play UX refinement pass ===== */
+.quest-game-screen {
+  --quest-calm: #62f2db;
+  --quest-calm-soft: rgba(98,242,219,.16);
+  --quest-reward: #ffc857;
+  --quest-danger: #ff6e8a;
+  gap: 8px;
+}
+
+.quest-game-back {
+  align-self: flex-end;
+  color: #dce7ff;
+  background: rgba(10, 18, 35, .62);
+  border-color: rgba(255,255,255,.12);
+}
+
+.quest-game-panel {
+  gap: 9px;
+}
+
+.quest-game-hud {
+  padding: 12px 13px;
+  border-radius: 24px;
+  border-color: rgba(98,242,219,.18);
+  background:
+    linear-gradient(135deg, rgba(8,31,49,.94) 0%, rgba(14,25,58,.92) 58%, rgba(27,27,70,.92) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 16px 34px rgba(0,0,0,.20),
+    0 0 0 1px rgba(98,242,219,.035);
+}
+
+.quest-game-title span {
+  color: var(--quest-calm);
+}
+
+.quest-game-title strong {
+  font-size: .84rem;
+  letter-spacing: -.015em;
+}
+
+.quest-level-chip {
+  min-width: 56px;
+  border-color: rgba(255,200,87,.22);
+  background:
+    linear-gradient(145deg, rgba(255,200,87,.17), rgba(255,255,255,.055));
+  box-shadow: none;
+}
+
+.quest-level-chip span {
+  color: #ffdd8f;
+  font-size: .48rem;
+}
+
+.quest-level-chip strong {
+  color: #fff4c9;
+  font-size: .86rem;
+}
+
+.quest-stage-strip {
+  gap: 7px;
+  padding: 3px 3px 2px;
+}
+
+.quest-stage-strip span {
+  height: 7px;
+  background: rgba(255,255,255,.075);
+  border-color: rgba(255,255,255,.055);
+}
+
+.quest-stage-strip span.done {
+  background: linear-gradient(90deg, rgba(98,242,219,.88), rgba(127,220,255,.78));
+  box-shadow: 0 0 12px rgba(98,242,219,.18);
+}
+
+.quest-stage-strip span.active {
+  background: linear-gradient(90deg, var(--quest-calm), #a9fff3);
+  box-shadow: 0 0 14px rgba(98,242,219,.26);
+}
+
+.quest-game-panel .quest-arcade-head {
+  padding: 1px 2px 8px;
+  border-bottom-color: rgba(98,242,219,.12);
+}
+
+.quest-arcade-head .small-caps {
+  color: #ffdd8f;
+}
+
+.quest-arcade-head h3 {
+  color: #f8fbff;
+  font-size: .94rem;
+  text-shadow: none;
+}
+
+.quest-dialogue-bubble.antagonist {
+  border-color: rgba(255,110,138,.22);
+  background:
+    linear-gradient(145deg, rgba(96,35,62,.62), rgba(255,255,255,.04));
+}
+
+.quest-dialogue-bubble.antagonist::before {
+  background: var(--quest-danger);
+}
+
+.quest-dialogue-bubble.victim {
+  border-color: rgba(98,242,219,.2);
+  background:
+    linear-gradient(145deg, rgba(15,66,76,.68), rgba(74,70,162,.12));
+}
+
+.quest-dialogue-bubble.victim::before {
+  background: var(--quest-calm);
+}
+
+.quest-question-copy {
+  background:
+    linear-gradient(135deg, rgba(98,242,219,.08), rgba(90,143,255,.045));
+  border-color: rgba(98,242,219,.14);
+}
+
+.quest-option-card {
+  border-color: rgba(255,255,255,.09);
+  background: rgba(10,20,38,.62);
+}
+
+.quest-arcade-option:hover,
+.quest-arcade-option:focus-visible {
+  border-color: rgba(98,242,219,.32);
+  background: rgba(14,48,63,.74);
+}
+
+.quest-arcade-option.selected {
+  border-color: rgba(98,242,219,.46);
+  background:
+    linear-gradient(145deg, rgba(98,242,219,.16), rgba(90,143,255,.12));
+  box-shadow:
+    0 0 0 1px rgba(98,242,219,.14),
+    0 14px 28px rgba(98,242,219,.10);
+}
+
+.quest-arcade-option.selected .quest-choice-index {
+  color: #061a22;
+  background: linear-gradient(135deg, #8efff0, #7fdcff);
+  border-color: rgba(98,242,219,.48);
+}
+
+.quest-reward-pop {
+  color: #211725;
+  background: linear-gradient(135deg, var(--quest-reward), #ffe39a);
+  box-shadow: 0 10px 18px rgba(255,200,87,.18);
+}
+
+.quest-next-btn,
+.quest-game-panel .quest-next-btn {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+  border-radius: 17px;
+  color: #101724;
+  background: linear-gradient(135deg, var(--quest-reward), #ffdf8f);
+  box-shadow:
+    0 16px 30px rgba(255,200,87,.22),
+    inset 0 1px 0 rgba(255,255,255,.28);
+  font-size: .84rem;
+  font-weight: 950;
+}
+
+.quest-game-panel.has-feedback .quest-next-btn {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+}
+
+/* ===== KindQuest bolder color system + integrated back control ===== */
+.quest-game-screen {
+  --quest-cyan: #22e8d2;
+  --quest-cyan-soft: rgba(34,232,210,.16);
+  --quest-pink: #ff3f70;
+  --quest-pink-soft: rgba(255,63,112,.18);
+  --quest-gold: #ffcf4a;
+  --quest-violet: #7b5cff;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(34,232,210,.18), transparent 30%),
+    radial-gradient(circle at 95% 16%, rgba(255,63,112,.16), transparent 28%),
+    radial-gradient(circle at 80% 78%, rgba(255,207,74,.10), transparent 26%),
+    linear-gradient(180deg, #0a0e22 0%, #09101e 100%);
+}
+
+.quest-game-screen::before {
+  inset: -18px -18px 45%;
+  background:
+    linear-gradient(135deg, rgba(34,232,210,.16), transparent 34%),
+    radial-gradient(circle at 80% 20%, rgba(255,63,112,.14), transparent 30%);
+}
+
+.quest-game-hud {
+  position: relative;
+  overflow: hidden;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 9px;
+  border-color: rgba(34,232,210,.20);
+  background:
+    linear-gradient(135deg, rgba(8,31,50,.96) 0%, rgba(13,22,56,.94) 52%, rgba(37,24,68,.92) 100%);
+}
+
+.quest-game-hud::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--quest-cyan), var(--quest-gold), var(--quest-pink));
+  opacity: .95;
+}
+
+.quest-game-hud .quest-game-back {
+  position: relative;
+  top: auto;
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border-radius: 12px;
+  color: #eaf7ff;
+  background: rgba(255,255,255,.075);
+  border-color: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.quest-game-title span {
+  color: var(--quest-cyan);
+}
+
+.quest-game-title strong {
+  color: #ffffff;
+  font-size: .82rem;
+}
+
+.quest-level-chip {
+  color: #1b1520;
+  border-color: rgba(255,207,74,.35);
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255,255,255,.34), transparent 34%),
+    linear-gradient(145deg, #ffcf4a, #ff9d4d);
+}
+
+.quest-level-chip span,
+.quest-level-chip strong {
+  color: #211725;
+}
+
+.quest-stage-strip span.done {
+  background: linear-gradient(90deg, var(--quest-cyan), #79ddff);
+}
+
+.quest-stage-strip span.active {
+  background: linear-gradient(90deg, var(--quest-gold), #ff9d4d);
+  box-shadow: 0 0 16px rgba(255,207,74,.34);
+}
+
+.quest-arcade-head .small-caps {
+  color: var(--quest-gold);
+}
+
+.quest-dialogue-bubble.antagonist {
+  border-color: rgba(255,63,112,.36);
+  background:
+    radial-gradient(circle at 6% 0%, rgba(255,63,112,.22), transparent 36%),
+    linear-gradient(145deg, rgba(96,28,58,.80), rgba(28,22,50,.74));
+}
+
+.quest-dialogue-bubble.antagonist::before {
+  background: var(--quest-pink);
+}
+
+.quest-dialogue-bubble.antagonist span {
+  color: #ffc1ce;
+}
+
+.quest-dialogue-bubble.victim {
+  border-color: rgba(34,232,210,.34);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(34,232,210,.20), transparent 36%),
+    linear-gradient(145deg, rgba(12,67,77,.82), rgba(21,31,68,.76));
+}
+
+.quest-dialogue-bubble.victim::before {
+  background: var(--quest-cyan);
+}
+
+.quest-dialogue-bubble.victim span {
+  color: #a7fff4;
+}
+
+.quest-question-copy {
+  border-left-color: var(--quest-cyan);
+  background:
+    linear-gradient(135deg, rgba(34,232,210,.10), rgba(123,92,255,.08));
+}
+
+.quest-choice-index {
+  color: #dffdf8;
+  background: rgba(123,92,255,.18);
+  border-color: rgba(123,92,255,.28);
+}
+
+.quest-arcade-option:hover .quest-choice-index,
+.quest-arcade-option:focus-visible .quest-choice-index {
+  background: linear-gradient(135deg, var(--quest-cyan), #7fdcff);
+}
+
+.quest-arcade-option.selected {
+  border-color: rgba(255,207,74,.52);
+  background:
+    linear-gradient(145deg, rgba(255,207,74,.17), rgba(123,92,255,.16));
+  box-shadow:
+    0 0 0 1px rgba(255,207,74,.14),
+    0 14px 28px rgba(255,207,74,.12);
+}
+
+.quest-arcade-option.selected .quest-choice-index {
+  background: linear-gradient(135deg, var(--quest-gold), #ffdf8f);
+}
+
+.quest-arcade-feedback.best {
+  border-color: rgba(34,232,210,.34);
+  border-left-color: var(--quest-cyan);
+  background:
+    linear-gradient(150deg, rgba(34,232,210,.18), rgba(123,92,255,.10), rgba(255,255,255,.04));
+}
+
+.quest-arcade-feedback.needs-growth {
+  border-color: rgba(255,207,74,.34);
+  border-left-color: var(--quest-gold);
+  background:
+    linear-gradient(150deg, rgba(255,207,74,.16), rgba(255,63,112,.08), rgba(255,255,255,.04));
+}
+
+.quest-result-topline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.quest-result-topline .quest-game-back {
+  position: relative;
+  top: auto;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border-radius: 12px;
+}
+
+/* ===== Quest game true fullscreen mode ===== */
+.app-page.quest-game-mode {
+  padding:
+    calc(50px + env(safe-area-inset-top))
+    14px
+    calc(14px + env(safe-area-inset-bottom))
+    14px;
+  gap: 0;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(34,232,210,.18), transparent 30%),
+    radial-gradient(circle at 95% 16%, rgba(255,63,112,.16), transparent 28%),
+    radial-gradient(circle at 80% 78%, rgba(255,207,74,.10), transparent 26%),
+    linear-gradient(180deg, #0a0e22 0%, #09101e 100%);
+}
+
+.quest-game-mode .app-content {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow-y: auto;
+}
+
+.quest-game-mode .tab-transition-stack,
+.quest-game-mode .tab-layer,
+.quest-game-mode .tab-layer-current {
+  min-height: 100%;
+}
+
+.quest-game-mode .tab-layer {
+  gap: 0;
+}
+
+.quest-game-mode .quest-game-screen {
+  min-height: 100%;
+  padding-bottom: 2px;
+  background: transparent;
+}
+
+.quest-game-mode .quest-game-screen::before {
+  inset: -58px -14px 32%;
+}
+
+.quest-feedback-kicker {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 5px;
+  color: #9efff4;
+  font-size: .52rem;
+  font-weight: 950;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.quest-arcade-feedback.needs-growth .quest-feedback-kicker {
+  color: #ffe09a;
+}
+
+/* ===== Feature Signature Colors: clearer emotional differentiation ===== */
+:root {
+  --kr-shield-main: #1df0d2;
+  --kr-shield-deep: #073f4d;
+  --kr-kindbot-main: #8b7cff;
+  --kr-kindbot-blue: #4aa8ff;
+  --kr-kindbot-deep: #1b1d58;
+  --kr-report-main: #ff3f70;
+  --kr-report-hot: #ff6b4a;
+  --kr-report-deep: #4c112c;
+  --kr-quest-main: #ffcf4a;
+  --kr-quest-hot: #ff934d;
+  --kr-quest-violet: #7b5cff;
+  --kr-sos-main: #ff173f;
+  --kr-sos-hot: #ff5b6f;
+  --kr-ink-deep: #070d1e;
+}
+
+.app-hero-card,
+.shield-intro-card,
+.kindbot-inline-head,
+.report-intro-card,
+.quest-hero-card,
+.quest-game-hud,
+.sos-intro-top {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-hero-card::before,
+.shield-intro-card::before,
+.kindbot-inline-head::before,
+.report-intro-card::before,
+.quest-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: .95;
+}
+
+.app-hero-card {
+  border-color: rgba(98,242,219,.20);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(29,240,210,.24), transparent 30%),
+    radial-gradient(circle at 92% 10%, rgba(255,207,74,.20), transparent 30%),
+    radial-gradient(circle at 86% 82%, rgba(139,124,255,.18), transparent 30%),
+    linear-gradient(145deg, rgba(12,30,58,.96), rgba(18,28,72,.92));
+}
+
+.app-hero-card::before {
+  background: linear-gradient(90deg, var(--kr-shield-main), var(--kr-kindbot-main), var(--kr-report-main), var(--kr-quest-main));
+}
+
+.app-hero-card .small-caps.mint {
+  color: #b9fff5;
+}
+
+.home-score-main {
+  border-color: rgba(255,207,74,.34);
+  background:
+    radial-gradient(circle at 82% 12%, rgba(255,207,74,.32), transparent 42%),
+    linear-gradient(145deg, rgba(104,70,28,.78), rgba(30,27,56,.78));
+}
+
+.home-score-progress {
+  border-color: rgba(29,240,210,.28);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(29,240,210,.26), transparent 38%),
+    linear-gradient(145deg, rgba(7,59,72,.78), rgba(34,32,88,.74));
+}
+
+.home-score-track i {
+  background: linear-gradient(90deg, var(--kr-shield-main), var(--kr-kindbot-main), var(--kr-quest-main));
+}
+
+.feature-demo-card.teal {
+  color: var(--kr-shield-main);
+  border-color: rgba(29,240,210,.22);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(29,240,210,.25), transparent 36%),
+    linear-gradient(155deg, rgba(7,63,77,.94), rgba(8,23,45,.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 30px rgba(29,240,210,.08);
+}
+
+.feature-demo-card.violet {
+  color: var(--kr-kindbot-main);
+  border-color: rgba(139,124,255,.25);
+  background:
+    radial-gradient(circle at 86% 14%, rgba(74,168,255,.20), transparent 34%),
+    linear-gradient(155deg, rgba(39,35,112,.92), rgba(14,20,54,.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 30px rgba(139,124,255,.10);
+}
+
+.feature-demo-card.rose {
+  color: var(--kr-report-main);
+  border-color: rgba(255,63,112,.28);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255,63,112,.25), transparent 36%),
+    linear-gradient(155deg, rgba(83,18,48,.94), rgba(31,18,43,.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 30px rgba(255,63,112,.11);
+}
+
+.feature-demo-card.amber {
+  color: var(--kr-quest-main);
+  border-color: rgba(255,207,74,.30);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255,207,74,.26), transparent 36%),
+    linear-gradient(155deg, rgba(92,61,24,.94), rgba(35,29,58,.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 30px rgba(255,207,74,.10);
+}
+
+.feature-demo-card.teal .feature-icon-badge {
+  background: rgba(29,240,210,.18);
+  border-color: rgba(29,240,210,.30);
+}
+
+.feature-demo-card.violet .feature-icon-badge {
+  background: rgba(139,124,255,.20);
+  border-color: rgba(139,124,255,.32);
+}
+
+.feature-demo-card.rose .feature-icon-badge {
+  background: rgba(255,63,112,.20);
+  border-color: rgba(255,63,112,.34);
+}
+
+.feature-demo-card.amber .feature-icon-badge {
+  background: rgba(255,207,74,.20);
+  border-color: rgba(255,207,74,.34);
+}
+
+.shield-intro-card {
+  border-color: rgba(29,240,210,.30);
+  background:
+    repeating-linear-gradient(90deg, rgba(29,240,210,.045) 0 1px, transparent 1px 12px),
+    radial-gradient(circle at 86% 16%, rgba(29,240,210,.28), transparent 38%),
+    linear-gradient(135deg, rgba(5,65,75,.96), rgba(8,31,58,.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 18px 34px rgba(29,240,210,.10);
+}
+
+.shield-intro-card::before {
+  background: linear-gradient(90deg, transparent, var(--kr-shield-main), #8efff0, transparent);
+}
+
+.shield-toggle.is-on .shield-toggle-track,
+.shield-toggle-track {
+  background: linear-gradient(90deg, var(--kr-shield-main), #5ac8ff);
+  border-color: rgba(29,240,210,.42);
+}
+
+.shield-safe-card {
+  border-color: rgba(29,240,210,.28);
+  background: linear-gradient(145deg, rgba(29,240,210,.16), rgba(74,168,255,.08), rgba(255,255,255,.04));
+}
+
+.kindbot-inline-head {
+  padding: 11px 13px;
+  border-radius: 22px;
+  border: 1px solid rgba(139,124,255,.24);
+  background:
+    radial-gradient(circle at 88% 10%, rgba(74,168,255,.22), transparent 36%),
+    linear-gradient(135deg, rgba(27,29,88,.94), rgba(10,25,58,.90));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 30px rgba(139,124,255,.10);
+}
+
+.kindbot-inline-head::before {
+  background: linear-gradient(90deg, var(--kr-kindbot-main), var(--kr-kindbot-blue), transparent);
+}
+
+.kindbot-inline-head .small-caps {
+  color: #b9b3ff;
+}
+
+.kindbot-flow-panel .chat-bubble.bot {
+  border-color: rgba(139,124,255,.22);
+  background: linear-gradient(145deg, rgba(139,124,255,.16), rgba(74,168,255,.06));
+}
+
+.kindbot-flow-panel .chat-bubble.user {
+  background: linear-gradient(145deg, rgba(74,168,255,.42), rgba(139,124,255,.32));
+}
+
+.kindbot-fake-input {
+  border-color: rgba(139,124,255,.26);
+  background: rgba(15,21,58,.82);
+}
+
+.kindbot-send-chip {
+  background: linear-gradient(135deg, var(--kr-kindbot-blue), var(--kr-kindbot-main));
+}
+
+.report-intro-card {
+  border: 1px solid rgba(255,63,112,.28);
+  border-radius: 22px;
+  padding: 9px 10px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255,63,112,.23), transparent 36%),
+    linear-gradient(135deg, rgba(76,17,44,.94), rgba(29,18,43,.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 34px rgba(255,63,112,.11);
+}
+
+.report-intro-card::before {
+  background: linear-gradient(90deg, var(--kr-report-main), var(--kr-report-hot), transparent);
+}
+
+.report-intro-card .small-caps.rose {
+  color: #ffb2c2;
+}
+
+.report-intro-card .chip {
+  color: #ffe8ee;
+  background: rgba(255,63,112,.18);
+  border: 1px solid rgba(255,63,112,.25);
+}
+
+.report-security-card {
+  border-left-color: var(--kr-report-main);
+}
+
+.report-form select:focus,
+.report-form input:focus,
+.report-form textarea:focus {
+  border-color: rgba(255,63,112,.44);
+  box-shadow: 0 0 0 3px rgba(255,63,112,.10);
+}
+
+.report-flow-panel .submit-demo {
+  background: linear-gradient(135deg, var(--kr-report-main), var(--kr-report-hot));
+  box-shadow: 0 16px 30px rgba(255,63,112,.28);
+}
+
+.report-inline-feedback.success {
+  border-color: rgba(29,240,210,.28);
+}
+
+.report-inline-feedback.error {
+  border-color: rgba(255,63,112,.36);
+}
+
+.quest-hero-card {
+  border-color: rgba(255,207,74,.30);
+  background:
+    radial-gradient(circle at 86% 16%, rgba(255,207,74,.26), transparent 36%),
+    radial-gradient(circle at 16% 10%, rgba(123,92,255,.18), transparent 34%),
+    linear-gradient(135deg, rgba(70,49,28,.96), rgba(26,26,76,.92));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 34px rgba(255,207,74,.10);
+}
+
+.quest-hero-card::before {
+  background: linear-gradient(90deg, var(--kr-quest-main), var(--kr-quest-hot), var(--kr-quest-violet));
+}
+
+.quest-hero-card .small-caps.amber,
+.quest-map-card .small-caps.mint {
+  color: #ffe08a;
+}
+
+.quest-points-pill {
+  border-color: rgba(255,207,74,.32);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.26), transparent 34%),
+    linear-gradient(145deg, rgba(255,207,74,.30), rgba(123,92,255,.18));
+}
+
+.quest-map-detail-card.active {
+  border-color: rgba(255,207,74,.30);
+  background: linear-gradient(145deg, rgba(255,207,74,.14), rgba(123,92,255,.10));
+}
+
+.quest-game-hud {
+  border-color: rgba(255,207,74,.24);
+  background:
+    radial-gradient(circle at 88% 10%, rgba(255,207,74,.20), transparent 36%),
+    linear-gradient(135deg, rgba(35,25,66,.96), rgba(13,21,54,.94));
+}
+
+.quest-game-hud::before {
+  background: linear-gradient(90deg, var(--kr-quest-main), var(--kr-quest-hot), var(--kr-quest-violet));
+}
+
+.quest-stage-strip span.active,
+.quest-next-btn,
+.quest-game-panel .quest-next-btn {
+  background: linear-gradient(135deg, var(--kr-quest-main), #ffdf8f);
+}
+
+.sos-floating-bubble {
+  min-height: 48px;
+  padding: 11px 16px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,.28), transparent 30%),
+    linear-gradient(145deg, var(--kr-sos-main), var(--kr-sos-hot));
+  border: 1px solid rgba(255,255,255,.20);
+  box-shadow:
+    0 20px 42px rgba(255,23,63,.46),
+    0 0 0 7px rgba(255,23,63,.11);
+}
+
+.sos-intro-screen,
+.sos-calling-screen {
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255,23,63,.28), transparent 30%),
+    radial-gradient(circle at 4% 80%, rgba(255,91,111,.18), transparent 30%),
+    linear-gradient(180deg, #170817 0%, #130b23 54%, #0d1022 100%);
+}
+
+.sos-intro-copy h2,
+.sos-header h2 {
+  color: #fff5f7;
+}
+
+.sos-intro-button {
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,.24) 0%, rgba(255,255,255,.08) 30%, transparent 52%),
+    linear-gradient(145deg, var(--kr-sos-hot) 0%, var(--kr-sos-main) 52%, #9e071f 100%);
+  box-shadow:
+    0 0 0 18px rgba(255, 23, 63, .15),
+    0 0 0 38px rgba(255, 23, 63, .07),
+    0 24px 48px rgba(255, 23, 63, .38);
+}
+
+/* ===== Calm-down pass: use Lapor cleanliness as the visual baseline ===== */
+.app-hero-card {
+  border-color: rgba(118, 215, 255, .18);
+  background:
+    radial-gradient(circle at 16% 18%, rgba(118,215,255,.14), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgba(139,124,255,.12), transparent 30%),
+    linear-gradient(145deg, rgba(14,30,58,.94), rgba(13,23,48,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 16px 34px rgba(0,0,0,.18);
+}
+
+.app-hero-card::before {
+  height: 3px;
+  background: linear-gradient(90deg, rgba(118,215,255,.85), rgba(139,124,255,.7));
+}
+
+.home-score-main {
+  border-color: rgba(255,207,74,.20);
+  background:
+    linear-gradient(145deg, rgba(72,55,33,.54), rgba(255,255,255,.045));
+}
+
+.home-score-progress {
+  border-color: rgba(118,215,255,.18);
+  background:
+    linear-gradient(145deg, rgba(12,43,67,.58), rgba(255,255,255,.045));
+}
+
+.home-score-chip-row span {
+  background: rgba(255,255,255,.07) !important;
+  border-color: rgba(255,255,255,.09) !important;
+}
+
+.home-feature-grid .feature-demo-card {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 12px 24px rgba(0,0,0,.12);
+}
+
+.feature-demo-card.teal {
+  border-color: rgba(29,240,210,.18);
+  background:
+    linear-gradient(155deg, rgba(8,59,68,.72), rgba(13,27,49,.88));
+}
+
+.feature-demo-card.violet {
+  border-color: rgba(139,124,255,.18);
+  background:
+    linear-gradient(155deg, rgba(42,39,103,.72), rgba(14,22,50,.88));
+}
+
+.feature-demo-card.rose {
+  border-color: rgba(255,63,112,.20);
+  background:
+    linear-gradient(155deg, rgba(77,24,49,.74), rgba(31,22,43,.88));
+}
+
+.feature-demo-card.amber {
+  border-color: rgba(255,207,74,.20);
+  background:
+    linear-gradient(155deg, rgba(75,55,29,.72), rgba(28,27,50,.88));
+}
+
+.report-intro-card {
+  padding: 8px 10px;
+}
+
+.report-security-card strong {
+  margin-bottom: 0;
+}
+
+.report-intro-card .report-security-card {
+  margin-top: 6px;
+}
+
+.quest-game-screen,
+.app-page.quest-game-mode {
+  --quest-cyan: #62f2db;
+  --quest-gold: #ffc857;
+  --quest-pink: #ff5b7e;
+  background:
+    radial-gradient(circle at 86% 8%, rgba(255,200,87,.14), transparent 30%),
+    radial-gradient(circle at 8% 70%, rgba(98,242,219,.10), transparent 30%),
+    linear-gradient(180deg, #0b1124 0%, #09101e 100%);
+}
+
+.quest-game-screen::before,
+.quest-game-mode .quest-game-screen::before {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255,200,87,.12), transparent 28%),
+    linear-gradient(180deg, rgba(32,31,74,.28), transparent);
+}
+
+.quest-game-hud {
+  border-color: rgba(255,200,87,.20);
+  background:
+    linear-gradient(135deg, rgba(21,28,58,.96), rgba(13,22,48,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 14px 28px rgba(0,0,0,.18);
+}
+
+.quest-game-hud::before {
+  height: 3px;
+  background: linear-gradient(90deg, var(--quest-gold), rgba(255,200,87,.35));
+}
+
+.quest-game-title span {
+  color: #ffe0a0;
+}
+
+.quest-level-chip {
+  border-color: rgba(255,200,87,.26);
+  background: linear-gradient(145deg, #ffd36a, #ffae55);
+}
+
+.quest-stage-strip span.done {
+  background: rgba(98,242,219,.62);
+  box-shadow: none;
+}
+
+.quest-stage-strip span.active {
+  background: linear-gradient(90deg, var(--quest-gold), #ffdf8f);
+  box-shadow: 0 0 12px rgba(255,200,87,.24);
+}
+
+.quest-dialogue-bubble.antagonist {
+  border-color: rgba(255,91,126,.24);
+  background:
+    linear-gradient(145deg, rgba(72,26,48,.76), rgba(24,23,43,.72));
+}
+
+.quest-dialogue-bubble.victim {
+  border-color: rgba(98,242,219,.22);
+  background:
+    linear-gradient(145deg, rgba(12,58,65,.72), rgba(18,30,58,.76));
+}
+
+.quest-question-copy {
+  border-left-color: rgba(255,200,87,.70);
+  border-color: rgba(255,200,87,.12);
+  background:
+    linear-gradient(135deg, rgba(255,200,87,.08), rgba(255,255,255,.035));
+}
+
+.quest-question-copy .small-caps,
+.quest-arcade-head .small-caps {
+  color: #ffe0a0;
+}
+
+.quest-arcade-option.selected {
+  border-color: rgba(255,200,87,.44);
+  background:
+    linear-gradient(145deg, rgba(255,200,87,.14), rgba(255,255,255,.055));
+  box-shadow:
+    0 0 0 1px rgba(255,200,87,.10),
+    0 12px 24px rgba(255,200,87,.08);
+}
+
+.quest-arcade-option.selected .quest-choice-index {
+  background: linear-gradient(135deg, var(--quest-gold), #ffdf8f);
+}
+
+.quest-arcade-feedback.best,
+.quest-arcade-feedback.needs-growth {
+  background:
+    linear-gradient(150deg, rgba(255,200,87,.12), rgba(255,255,255,.04));
+  border-color: rgba(255,200,87,.24);
+  border-left-color: rgba(255,200,87,.78);
+}
+
+.quest-next-btn,
+.quest-game-panel .quest-next-btn {
+  background: linear-gradient(135deg, var(--quest-gold), #ffdf8f);
+}
+
+.sos-responder-list {
+  grid-template-columns: 1fr;
+}
+
+/* ===== Final readability pass: cleaner Home + calmer Quest game ===== */
+.app-hero-card {
+  padding: 16px;
+  gap: 12px;
+  border-color: rgba(118, 215, 255, .14);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(118,215,255,.10), transparent 31%),
+    linear-gradient(145deg, rgba(14,30,58,.92), rgba(13,22,46,.96));
+}
+
+.app-hero-card::before {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(118,215,255,.78), rgba(139,124,255,.48), transparent);
+}
+
+.home-score-panel {
+  gap: 10px;
+}
+
+.home-score-main,
+.home-score-progress {
+  box-shadow: none;
+}
+
+.home-score-chip-row {
+  margin-top: 7px;
+  gap: 6px;
+}
+
+.home-score-chip-row span {
+  padding: 5px 7px;
+  font-size: .66rem;
+  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.075) !important;
+  color: #d9e6ff !important;
+}
+
+.home-feature-grid.feature-card-grid {
+  gap: 8px;
+}
+
+.home-feature-grid .feature-demo-card,
+.home-feature-grid .feature-demo-card:nth-child(1),
+.home-feature-grid .feature-demo-card:nth-child(2),
+.home-feature-grid .feature-demo-card:nth-child(3),
+.home-feature-grid .feature-demo-card:nth-child(4) {
+  min-height: 118px;
+  padding: 10px;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+}
+
+.home-feature-grid .feature-demo-card::after {
+  opacity: .045;
+}
+
+.home-feature-grid .feature-demo-card strong {
+  font-size: .8rem;
+  line-height: 1.12;
+}
+
+.home-feature-grid .feature-demo-card p {
+  font-size: .62rem;
+  line-height: 1.3;
+}
+
+.home-feature-grid .feature-demo-card span {
+  font-size: .48rem;
+  letter-spacing: .08em;
+}
+
+.quest-game-screen,
+.app-page.quest-game-mode {
+  --quest-cyan: #6ee7e0;
+  --quest-gold: #ffd36a;
+  --quest-pink: #f06b8d;
+  --quest-panel: rgba(15, 23, 47, .92);
+  background:
+    radial-gradient(circle at 82% 10%, rgba(255,211,106,.10), transparent 30%),
+    linear-gradient(180deg, #0b1022 0%, #08101c 100%) !important;
+}
+
+.quest-game-screen::before,
+.quest-game-mode .quest-game-screen::before {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255,211,106,.10), transparent 28%),
+    linear-gradient(180deg, rgba(255,211,106,.035), transparent) !important;
+}
+
+.quest-game-hud {
+  border-color: rgba(255,211,106,.18);
+  background:
+    linear-gradient(135deg, rgba(18,25,53,.96), rgba(12,21,44,.96)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 12px 24px rgba(0,0,0,.14);
+}
+
+.quest-game-hud::before {
+  height: 2px;
+  background: linear-gradient(90deg, var(--quest-gold), rgba(110,231,224,.44), transparent) !important;
+}
+
+.quest-game-title span,
+.quest-arcade-head .small-caps,
+.quest-question-copy .small-caps {
+  color: #ffe3a3;
+}
+
+.quest-level-chip {
+  border-color: rgba(255,211,106,.26);
+  background: linear-gradient(145deg, #ffd36a, #ffb35f) !important;
+}
+
+.quest-stage-strip span.done {
+  background: rgba(110,231,224,.58);
+  box-shadow: none;
+}
+
+.quest-stage-strip span.active {
+  background: linear-gradient(90deg, var(--quest-gold), #ffe19a) !important;
+  box-shadow: 0 0 12px rgba(255,211,106,.20);
+}
+
+.quest-dialogue-bubble.antagonist {
+  border-color: rgba(240,107,141,.18);
+  background: linear-gradient(145deg, rgba(58,31,52,.78), rgba(19,24,44,.76)) !important;
+  box-shadow: inset 3px 0 0 rgba(240,107,141,.48);
+}
+
+.quest-dialogue-bubble.antagonist::before {
+  background: var(--quest-pink);
+}
+
+.quest-dialogue-bubble.antagonist span {
+  color: #ffc5d2;
+}
+
+.quest-dialogue-bubble.victim {
+  border-color: rgba(110,231,224,.18);
+  background: linear-gradient(145deg, rgba(18,48,62,.78), rgba(18,28,55,.76)) !important;
+  box-shadow: inset -3px 0 0 rgba(110,231,224,.48);
+}
+
+.quest-dialogue-bubble.victim::before {
+  background: var(--quest-cyan);
+}
+
+.quest-dialogue-bubble.victim span {
+  color: #b8fff8;
+}
+
+.quest-question-copy {
+  border-color: rgba(255,211,106,.12);
+  border-left-color: rgba(255,211,106,.72);
+  background: linear-gradient(135deg, rgba(255,211,106,.065), rgba(255,255,255,.028)) !important;
+}
+
+.quest-arcade-option {
+  border-color: rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+}
+
+.quest-arcade-option.selected {
+  border-color: rgba(255,211,106,.36);
+  background: linear-gradient(145deg, rgba(255,211,106,.11), rgba(255,255,255,.045)) !important;
+  box-shadow: 0 0 0 1px rgba(255,211,106,.08), 0 10px 22px rgba(255,211,106,.075);
+}
+
+.quest-arcade-option.selected .quest-choice-index {
+  background: linear-gradient(135deg, var(--quest-gold), #ffe19a) !important;
+}
+
+.quest-arcade-feedback.best {
+  border-color: rgba(110,231,224,.22);
+  border-left-color: rgba(110,231,224,.72);
+  background: linear-gradient(150deg, rgba(110,231,224,.10), rgba(255,255,255,.035)) !important;
+}
+
+.quest-arcade-feedback.needs-growth {
+  border-color: rgba(255,211,106,.22);
+  border-left-color: rgba(255,211,106,.72);
+  background: linear-gradient(150deg, rgba(255,211,106,.10), rgba(255,255,255,.035)) !important;
+}
+
+.quest-next-btn,
+.quest-game-panel .quest-next-btn {
+  background: linear-gradient(135deg, var(--quest-gold), #ffe19a) !important;
+  box-shadow: 0 14px 28px rgba(255,211,106,.18);
+}
+
+/* ===== KindQuest mode selector + true edge-to-edge game screen ===== */
+.quest-mode-slider {
+  display: flex;
+  gap: 9px;
+  margin: 0 -2px 10px;
+  padding: 2px 2px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.quest-mode-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.quest-mode-card {
+  flex: 0 0 128px;
+  min-height: 112px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 10px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  color: #eef4ff;
+  text-align: left;
+  scroll-snap-align: start;
+  background:
+    radial-gradient(circle at 86% 14%, rgba(118,215,255,.10), transparent 36%),
+    linear-gradient(145deg, rgba(13,25,48,.92), rgba(11,18,36,.94));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+}
+
+.quest-mode-card span {
+  color: #ffe3a3;
+  font-size: .5rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.quest-mode-card strong {
+  font-size: .8rem;
+  line-height: 1.12;
+}
+
+.quest-mode-card small {
+  color: #9fb1d3;
+  font-size: .62rem;
+  line-height: 1.28;
+}
+
+.quest-mode-card.active {
+  border-color: rgba(255,211,106,.34);
+  background:
+    radial-gradient(circle at 86% 10%, rgba(255,211,106,.18), transparent 38%),
+    linear-gradient(145deg, rgba(35,34,83,.92), rgba(17,30,60,.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 12px 22px rgba(255,211,106,.08);
+}
+
+.quest-mode-card.locked {
+  opacity: .72;
+}
+
+.quest-mode-card.locked span {
+  color: rgba(255,211,106,.62);
+}
+
+.quest-topic-head {
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.quest-topic-head > div:first-child {
+  min-width: 0;
+}
+
+.quest-topic-head strong {
+  font-size: .88rem;
+  line-height: 1.18;
+}
+
+.quest-topic-trophy {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #fff1bd;
+  background: rgba(255,211,106,.12);
+  border: 1px solid rgba(255,211,106,.18);
+}
+
+.app-page.quest-game-mode {
+  padding: 0 !important;
+  gap: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 8%, rgba(255,211,106,.10), transparent 32%),
+    linear-gradient(180deg, #0b1022 0%, #08101c 100%) !important;
+}
+
+.quest-game-mode .app-content {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding: 0 !important;
+  margin: 0;
+  overflow-y: auto;
+}
+
+.quest-game-mode .tab-transition-stack,
+.quest-game-mode .tab-layer,
+.quest-game-mode .tab-layer-current {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.quest-game-mode .quest-game-screen {
+  width: 100%;
+  min-height: 100%;
+  padding:
+    calc(54px + env(safe-area-inset-top))
+    14px
+    calc(18px + env(safe-area-inset-bottom))
+    14px;
+  background:
+    radial-gradient(circle at 82% 8%, rgba(255,211,106,.10), transparent 30%),
+    linear-gradient(180deg, #0b1022 0%, #08101c 100%) !important;
+}
+
+.quest-game-mode .quest-game-screen::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 13%, rgba(255,211,106,.105), transparent 32%),
+    radial-gradient(circle at 8% 58%, rgba(110,231,224,.075), transparent 30%) !important;
+}
+
+.quest-game-mode .quest-game-panel,
+.quest-game-mode .quest-game-result {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ===== Quest game edge cleanup: remove right-side silhouette/scroll gutter ===== */
+.app-page.quest-game-mode,
+.quest-game-mode .app-content,
+.quest-game-mode .tab-transition-stack,
+.quest-game-mode .tab-layer,
+.quest-game-mode .tab-layer-current,
+.quest-game-mode .quest-game-screen {
+  background:
+    radial-gradient(circle at 82% 8%, rgba(255,211,106,.08), transparent 30%),
+    linear-gradient(180deg, #0b1022 0%, #08101c 100%) !important;
+}
+
+.quest-game-mode .app-content,
+.quest-game-mode .quest-game-screen {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.quest-game-mode .app-content::-webkit-scrollbar,
+.quest-game-mode .quest-game-screen::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.quest-game-mode .quest-game-screen::before {
+  display: none !important;
+}
+
+.quest-game-mode .tab-layer-current,
+.quest-game-mode .quest-game-screen {
+  overflow-x: hidden;
 }

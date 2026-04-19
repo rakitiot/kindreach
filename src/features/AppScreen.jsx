@@ -4,7 +4,6 @@ import {
   Bot,
   CheckCircle2,
   FileWarning,
-  HeartHandshake,
   LogOut,
   MapPin,
   Mic,
@@ -18,7 +17,7 @@ import {
   bottomTabs,
   featureCards,
   kindbotPlaybook,
-  questScenarios,
+  rolePlayQuest,
   reportPresets,
   responderTeam,
   shieldFlaggedWords,
@@ -194,6 +193,13 @@ const featureIconMap = {
   quest: Trophy,
 }
 
+const featureTabMap = {
+  cyber: 'shield',
+  kindbot: 'kindbot',
+  report: 'report',
+  quest: 'quest',
+}
+
 function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel = 'Peta perjalanan Kind-Quest' }) {
   return (
     <div className={`quest-map-trail ${className}`.trim()} aria-label={ariaLabel}>
@@ -237,7 +243,7 @@ function QuestTrailMap({ nodes, selectedId, onSelect, className = '', ariaLabel 
   )
 }
 
-function HomeTab({ user }) {
+function HomeTab({ user, onTabChange }) {
   const heroAvatar = user.avatar || createAnimeAvatarSvg(user.name)
   const firstName = user.name.split(' ')[0]
   const weeklyProgress = 230
@@ -280,9 +286,8 @@ function HomeTab({ user }) {
           </div>
 
           <div className="home-score-chip-row">
-            <span>+82 pts hari ini</span>
-            <span>2 quest selesai</span>
-            <span>Badge: Teman Digital Aman</span>
+            <span><Sparkles size={12} /> +82 pts hari ini</span>
+            <span><CheckCircle2 size={12} /> 2 quest selesai</span>
           </div>
         </div>
       </section>
@@ -292,7 +297,12 @@ function HomeTab({ user }) {
           const FeatureIcon = featureIconMap[item.key] || Sparkles
 
           return (
-            <article key={item.key} className={`feature-demo-card ${item.color}`}>
+            <button
+              key={item.key}
+              type="button"
+              className={`feature-demo-card ${item.color}`}
+              onClick={() => onTabChange(featureTabMap[item.key] || 'home')}
+            >
               <div className="feature-card-top">
                 <span>{item.status}</span>
                 <div className="feature-icon-badge">
@@ -301,7 +311,7 @@ function HomeTab({ user }) {
               </div>
               <strong>{item.title}</strong>
               <p>{item.text}</p>
-            </article>
+            </button>
           )
         })}
       </section>
@@ -539,7 +549,6 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
 
         <div className="report-security-card">
           <strong>Anonim, aman, dan langsung ke tim sekolah</strong>
-          <p>Pelapor bisa menyampaikan kronologi, lokasi, dan bukti pendukung dengan identitas yang tetap terlindungi.</p>
         </div>
       </div>
 
@@ -633,14 +642,16 @@ function ReportTab({ reports, onCreateReport, isSubmittingReport }) {
   )
 }
 
-function QuestTab({ user, onResolveQuest }) {
-  const [activeScenario, setActiveScenario] = useState(questScenarios[0])
-  const [feedback, setFeedback] = useState('')
-  const [selectedOptionId, setSelectedOptionId] = useState('')
-  const [lastPoints, setLastPoints] = useState(null)
-  const [completedIds, setCompletedIds] = useState([])
-  const [selectedQuestId, setSelectedQuestId] = useState('map-3')
-  const [isChallengeOpen, setIsChallengeOpen] = useState(false)
+function QuestTab({ user, onResolveQuest, onGameModeChange }) {
+  const [selectedModeId, setSelectedModeId] = useState('victim')
+  const [selectedQuestId, setSelectedQuestId] = useState(rolePlayQuest.mapNodes[0].id)
+  const [isSimulationOpen, setIsSimulationOpen] = useState(false)
+  const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
+  const [selectedChoiceId, setSelectedChoiceId] = useState('')
+  const [sceneFeedback, setSceneFeedback] = useState('')
+  const [sessionPoints, setSessionPoints] = useState(0)
+  const [completedQuestIds, setCompletedQuestIds] = useState([])
+  const [isMissionComplete, setIsMissionComplete] = useState(false)
   const [selectedPointWeekKey, setSelectedPointWeekKey] = useState(pointWeekOptions[0].key)
   const challengeCardRef = useRef(null)
   const selectedPointWeek = pointWeekOptions.find((week) => week.key === selectedPointWeekKey) || pointWeekOptions[0]
@@ -648,13 +659,10 @@ function QuestTab({ user, onResolveQuest }) {
   const highestPoint = recordedPointItems.reduce((highest, item) => item.points > highest.points ? item : highest, recordedPointItems[0])
   const lowestPoint = recordedPointItems.reduce((lowest, item) => item.points < lowest.points ? item : lowest, recordedPointItems[0])
   const maxDailyPoints = Math.max(...recordedPointItems.map((item) => item.points), 1)
-  const questMapProgress = questMapNodes.map((node) => {
-    if (node.id === 'map-3' && completedIds.length > 0) {
+  const activeMode = rolePlayQuest.modes.find((mode) => mode.id === selectedModeId) || rolePlayQuest.modes.find((mode) => mode.id === 'victim') || rolePlayQuest.modes[0]
+  const questMapProgress = rolePlayQuest.mapNodes.map((node) => {
+    if (completedQuestIds.includes(node.id)) {
       return { ...node, status: 'Selesai', state: 'done' }
-    }
-
-    if (node.id === 'map-4' && completedIds.length > 0) {
-      return { ...node, status: 'Aktif', state: 'active' }
     }
 
     return node
@@ -662,22 +670,27 @@ function QuestTab({ user, onResolveQuest }) {
   const selectedQuestIndex = Math.max(0, questMapProgress.findIndex((node) => node.id === selectedQuestId))
   const selectedQuestNode = questMapProgress[selectedQuestIndex] || questMapProgress[0]
   const selectedQuestLocked = selectedQuestNode.state === 'locked'
-  const highestScenarioPoints = Math.max(...activeScenario.options.map((option) => option.points), 0)
-  const selectedOption = activeScenario.options.find((option) => option.id === selectedOptionId)
-  const selectedOptionIsBest = Boolean(selectedOption && selectedOption.points >= highestScenarioPoints)
-  const selectedScoreRatio = selectedOption ? selectedOption.points / Math.max(highestScenarioPoints, 1) : 0
-  const empathyMeterValue = selectedOption ? Math.max(26, Math.round(selectedScoreRatio * 100)) : 48
-  const riskMeterValue = selectedOption ? Math.max(8, Math.round((1 - selectedScoreRatio) * 100)) : 52
+  const currentScene = rolePlayQuest.stages[currentSceneIndex] || rolePlayQuest.stages[0]
+  const selectedChoice = currentScene.choices.find((choice) => choice.id === selectedChoiceId)
+  const sceneMaxPoints = Math.max(...currentScene.choices.map((choice) => choice.points), 0)
+  const selectedChoiceIsBest = Boolean(selectedChoice && selectedChoice.points >= sceneMaxPoints)
+  const totalScenes = rolePlayQuest.stages.length
+  const maxSessionPoints = rolePlayQuest.stages.reduce((total, scene) => total + Math.max(...scene.choices.map((choice) => choice.points), 0), 0)
+  const finalLevel = sessionPoints >= maxSessionPoints * 0.78 ? 'Aman dan Empatik' : sessionPoints >= maxSessionPoints * 0.48 ? 'Cukup Aman, Perlu Ditingkatkan' : 'Perlu Pendampingan Aman'
+  const finalBadge = sessionPoints >= maxSessionPoints * 0.78 ? 'Penyintas Aman' : 'Pejuang Refleksi'
 
   useEffect(() => {
-    setIsChallengeOpen(false)
-    setFeedback('')
-    setSelectedOptionId('')
-    setLastPoints(null)
+    resetSimulationState()
   }, [selectedQuestId])
 
   useEffect(() => {
-    if (!isChallengeOpen) {
+    onGameModeChange?.(isSimulationOpen)
+
+    return () => onGameModeChange?.(false)
+  }, [isSimulationOpen, onGameModeChange])
+
+  useEffect(() => {
+    if (!isSimulationOpen) {
       return
     }
 
@@ -689,25 +702,191 @@ function QuestTab({ user, onResolveQuest }) {
     })
 
     return () => window.cancelAnimationFrame(frame)
-  }, [activeScenario, isChallengeOpen])
+  }, [currentSceneIndex, isMissionComplete, isSimulationOpen])
 
-  function selectOption(option) {
-    setSelectedOptionId(option.id)
-    setLastPoints(option.points)
-    setFeedback(option.outcome)
-    if (!completedIds.includes(activeScenario.id)) {
-      onResolveQuest(option.points)
-      setCompletedIds((prev) => [...prev, activeScenario.id])
-    }
+  function resetSimulationState() {
+    setIsSimulationOpen(false)
+    setCurrentSceneIndex(0)
+    setSelectedChoiceId('')
+    setSceneFeedback('')
+    setSessionPoints(0)
+    setIsMissionComplete(false)
   }
 
-  function openSelectedQuest() {
-    if (selectedQuestLocked) return
-    setActiveScenario(questScenarios[selectedQuestIndex % questScenarios.length])
-    setFeedback('')
-    setSelectedOptionId('')
-    setLastPoints(null)
-    setIsChallengeOpen(true)
+  function closeGameScreen() {
+    setIsSimulationOpen(false)
+  }
+
+  function startSimulation() {
+    if (selectedQuestLocked || activeMode.locked) {
+      return
+    }
+
+    setCurrentSceneIndex(0)
+    setSelectedChoiceId('')
+    setSceneFeedback('')
+    setSessionPoints(0)
+    setIsMissionComplete(false)
+    setIsSimulationOpen(true)
+  }
+
+  function selectChoice(choice) {
+    if (selectedChoiceId || isMissionComplete) {
+      return
+    }
+
+    setSelectedChoiceId(choice.id)
+    setSceneFeedback(choice.feedback)
+    setSessionPoints((points) => points + choice.points)
+  }
+
+  function continueSimulation() {
+    if (!selectedChoice) {
+      return
+    }
+
+    if (currentSceneIndex >= totalScenes - 1) {
+      setIsMissionComplete(true)
+      if (!completedQuestIds.includes(selectedQuestNode.id)) {
+        onResolveQuest(sessionPoints)
+        setCompletedQuestIds((prev) => [...prev, selectedQuestNode.id])
+      }
+      return
+    }
+
+    setCurrentSceneIndex((index) => index + 1)
+    setSelectedChoiceId('')
+    setSceneFeedback('')
+  }
+
+  if (isSimulationOpen) {
+    return (
+      <section className="quest-game-screen">
+        {!isMissionComplete ? (
+          <div ref={challengeCardRef} className={`quest-game-panel ${sceneFeedback ? 'has-feedback' : ''}`}>
+            <div className="quest-game-hud">
+              <button type="button" className="quest-game-back" onClick={closeGameScreen} aria-label="Kembali ke peta KindQuest">
+                <ArrowLeft size={17} />
+              </button>
+              <div className="quest-game-title">
+                <span>Game role-play</span>
+                <strong>{selectedQuestNode.title}</strong>
+              </div>
+              <div className="quest-level-chip">
+                <span>Skor</span>
+                <strong>{sessionPoints}</strong>
+              </div>
+            </div>
+
+            <div className="quest-stage-strip" aria-label={`Babak ${currentSceneIndex + 1} dari ${totalScenes}`}>
+              {Array.from({ length: totalScenes }).map((_, index) => {
+                const state = index < currentSceneIndex ? 'done' : index === currentSceneIndex ? 'active' : ''
+
+                return <span key={`stage-${index}`} className={state} />
+              })}
+            </div>
+
+            <div className="panel-head solid-bottom quest-arcade-head">
+              <div>
+                <span className="small-caps amber">{currentScene.chapter} / {totalScenes}</span>
+                <h3>Game sebagai korban</h3>
+              </div>
+            </div>
+
+            <div className="quest-dialogue-stack" aria-label="Percakapan game">
+              <div className="quest-dialogue-bubble antagonist">
+                <span>Karakter tidak baik</span>
+                <p>{currentScene.antagonist}</p>
+              </div>
+              <div className="quest-dialogue-bubble victim">
+                <span>Kamu</span>
+                <p>{currentScene.victim}</p>
+              </div>
+            </div>
+
+            <div className="quest-question-copy">
+              <span className="small-caps mint">Pilih respons</span>
+              <p className="quest-prompt">{currentScene.prompt}</p>
+            </div>
+
+            <div className="quest-option-list">
+              {currentScene.choices.map((choice, index) => {
+                const isSelected = selectedChoiceId === choice.id
+                const isDimmed = selectedChoiceId && !isSelected
+
+                return (
+                  <button
+                    type="button"
+                    key={choice.id}
+                    className={`quest-option-card quest-arcade-option ${isSelected ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}`}
+                    style={{ '--option-order': index }}
+                    onClick={() => selectChoice(choice)}
+                    aria-pressed={isSelected}
+                  >
+                    <span className="quest-choice-index">{index + 1}</span>
+                    <span>{choice.label}</span>
+                    {isSelected && <strong className="quest-reward-pop">+{choice.points} pts</strong>}
+                  </button>
+                )
+              })}
+            </div>
+
+            {sceneFeedback && (
+              <div className={`quest-feedback-card quest-arcade-feedback ${selectedChoiceIsBest ? 'best' : 'needs-growth'}`}>
+                <span className="quest-feedback-sparkle" aria-hidden="true" />
+                <CheckCircle2 size={16} />
+                <div>
+                  <span className="quest-feedback-kicker">Kesimpulan pilihanmu</span>
+                  <strong>{selectedChoiceIsBest ? 'Pilihan paling aman' : 'Strategi aman perlu ditingkatkan'}</strong>
+                  <p>{sceneFeedback}</p>
+                  {selectedChoice && <span className="quest-feedback-points">+{selectedChoice.points} pts</span>}
+                </div>
+              </div>
+            )}
+
+            {selectedChoice && (
+              <button type="button" className="mini-action quest-next-btn" onClick={continueSimulation}>
+                {currentSceneIndex >= totalScenes - 1 ? 'Lihat hasil akhir' : 'Lanjut ke babak berikutnya'}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div ref={challengeCardRef} className="quest-result-card quest-game-result">
+            <div className="quest-result-head">
+              <div className="quest-result-topline">
+                <button type="button" className="quest-game-back" onClick={closeGameScreen} aria-label="Kembali ke peta KindQuest">
+                  <ArrowLeft size={17} />
+                </button>
+                <span className="small-caps mint">Game selesai</span>
+              </div>
+              <h3>{finalLevel}</h3>
+              <p>Kamu menyelesaikan game sebagai korban dalam {totalScenes} babak.</p>
+            </div>
+
+            <div className="quest-result-score">
+              <div>
+                <span>Total poin sesi</span>
+                <strong>{sessionPoints}</strong>
+              </div>
+              <div>
+                <span>Badge akhir</span>
+                <strong>{finalBadge}</strong>
+              </div>
+            </div>
+
+            <div className="quest-result-summary">
+              {rolePlayQuest.resultSummary.map((item) => (
+                <span key={item}><CheckCircle2 size={14} /> {item}</span>
+              ))}
+            </div>
+
+            <button type="button" className="mini-action quest-next-btn" onClick={startSimulation}>
+              Main ulang
+            </button>
+          </div>
+        )}
+      </section>
+    )
   }
 
   return (
@@ -727,12 +906,31 @@ function QuestTab({ user, onResolveQuest }) {
       </div>
 
       <div className="quest-map-card">
-        <div className="weekly-points-head">
+        <div className="quest-mode-slider" aria-label="Pilih mode KindQuest">
+          {rolePlayQuest.modes.map((mode) => (
+            <button
+              key={mode.id}
+              type="button"
+              className={`quest-mode-card ${mode.id === activeMode.id ? 'active' : ''} ${mode.locked ? 'locked' : ''}`.trim()}
+              onClick={() => !mode.locked && setSelectedModeId(mode.id)}
+              aria-pressed={mode.id === activeMode.id}
+              aria-disabled={mode.locked}
+            >
+              <span>{mode.status}</span>
+              <strong>{mode.title}</strong>
+              <small>{mode.label}</small>
+            </button>
+          ))}
+        </div>
+
+        <div className="weekly-points-head quest-topic-head">
           <div>
-            <span className="small-caps mint">Peta Kind-Quest</span>
-            <strong>Pilih titik misi</strong>
+            <span className="small-caps mint">Peta topik</span>
+            <strong>{activeMode.title}</strong>
           </div>
-          <Trophy size={18} />
+          <div className="quest-topic-trophy">
+            <Trophy size={17} />
+          </div>
         </div>
 
         <QuestTrailMap
@@ -748,88 +946,11 @@ function QuestTab({ user, onResolveQuest }) {
             <strong>{selectedQuestNode.title}</strong>
             <p>{selectedQuestNode.detail}</p>
           </div>
-          <button type="button" className="mini-action" onClick={openSelectedQuest} disabled={selectedQuestLocked}>
-            {selectedQuestLocked ? 'Belum terbuka' : 'Buka tantangan'}
+          <button type="button" className="mini-action" onClick={startSimulation} disabled={selectedQuestLocked}>
+            {selectedQuestLocked ? 'Belum terbuka' : 'Mulai game'}
           </button>
         </div>
       </div>
-
-      {isChallengeOpen && (
-        <div ref={challengeCardRef} className={`quest-simulator-card quest-active-card quest-question-card ${feedback ? 'has-feedback' : ''}`}>
-          <div className="quest-mission-start" aria-hidden="true">
-            <span>Misi dimulai</span>
-            <strong>{activeScenario.title}</strong>
-          </div>
-
-          <div className="panel-head solid-bottom quest-arcade-head">
-            <div>
-              <span className="small-caps amber">Pertanyaan Kind-Quest</span>
-              <h3>{activeScenario.title}</h3>
-            </div>
-            <div className="quest-level-chip">
-              <span>Reward</span>
-              <strong>+{highestScenarioPoints}</strong>
-            </div>
-          </div>
-
-          <p className="quest-summary">{activeScenario.summary}</p>
-
-          <div className="quest-meter-grid" aria-label="Indikator hasil pilihan">
-            <div className="quest-meter-card empathy">
-              <span>Empati</span>
-              <strong>{empathyMeterValue}%</strong>
-              <div className="quest-meter-track">
-                <i style={{ width: `${empathyMeterValue}%` }} />
-              </div>
-            </div>
-            <div className="quest-meter-card risk">
-              <span>Risiko</span>
-              <strong>{riskMeterValue}%</strong>
-              <div className="quest-meter-track">
-                <i style={{ width: `${riskMeterValue}%` }} />
-              </div>
-            </div>
-          </div>
-
-          <div className="quest-question-copy">
-            <span className="small-caps mint">Apa yang harus dilakukan?</span>
-            <p className="quest-prompt">{activeScenario.prompt}</p>
-          </div>
-
-          <div className="quest-option-list">
-            {activeScenario.options.map((option, index) => {
-              const isSelected = selectedOptionId === option.id
-              const isDimmed = selectedOptionId && !isSelected
-
-              return (
-                <button
-                  key={option.id}
-                  className={`quest-option-card quest-arcade-option ${isSelected ? 'selected' : ''} ${isDimmed ? 'dimmed' : ''}`}
-                  style={{ '--option-order': index }}
-                  onClick={() => selectOption(option)}
-                >
-                  <HeartHandshake size={16} className="quest-option-heart" />
-                  <span>{option.label}</span>
-                  {isSelected && <strong className="quest-reward-pop">+{option.points} pts</strong>}
-                </button>
-              )
-            })}
-          </div>
-
-          {feedback && (
-            <div className={`quest-feedback-card quest-arcade-feedback ${selectedOptionIsBest ? 'best' : 'needs-growth'}`}>
-              <span className="quest-feedback-sparkle" aria-hidden="true" />
-              <CheckCircle2 size={16} />
-              <div>
-                <strong>{selectedOptionIsBest ? 'Misi terbaik' : 'Strategi aman perlu ditingkatkan'}</strong>
-                <p>{feedback}</p>
-                {lastPoints !== null && <span className="quest-feedback-points">+{lastPoints} pts</span>}
-                {selectedOptionIsBest && <span className="quest-badge-unlock">Badge terbuka: Teman Digital Aman</span>}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="weekly-points-card">
         <div className="weekly-points-head">
@@ -888,7 +1009,7 @@ export function SosScreen({ onClose }) {
         <section className="sos-intro-top solo-copy">
           <div className="sos-intro-copy">
             <h2>Butuh bantuan sekarang?</h2>
-            <p>Tekan tombol SOS jika kamu membutuhkan bantuan segera. Tim sekolah akan menerima sinyal prioritas dan membantu dari lokasi terdekat.</p>
+            <p>Tekan tombol SOS jika kamu membutuhkan bantuan segera. Guru BK akan menerima sinyal prioritas dan membantu dari lokasi terdekat.</p>
           </div>
         </section>
 
@@ -909,7 +1030,7 @@ export function SosScreen({ onClose }) {
 
       <div className="sos-header">
         <h2>Respon cepat sedang berjalan</h2>
-        <p>Sinyal bantuan prioritas sudah dikirim bersama titik lokasi darurat dan penerima terdekat.</p>
+        <p>Sinyal bantuan prioritas sudah dikirim bersama titik lokasi darurat ke Guru BK terdekat.</p>
       </div>
 
       <div className="sos-location-pill">
@@ -940,7 +1061,7 @@ export function SosScreen({ onClose }) {
 
       <div className="sos-status-card show">
         <strong>Bantuan berhasil dipanggil</strong>
-        <p>Tim sekolah sedang memantau status bantuan dan menyiapkan pendampingan langsung dari petugas terdekat.</p>
+        <p>Guru BK sedang memantau status bantuan dan menyiapkan pendampingan langsung dari lokasi terdekat.</p>
       </div>
     </div>
   )
@@ -960,6 +1081,7 @@ export default function AppScreen({
   const [shieldEnabled, setShieldEnabled] = useState(true)
   const [shieldInput, setShieldInput] = useState('')
   const [tabTransition, setTabTransition] = useState(null)
+  const [isQuestGameMode, setIsQuestGameMode] = useState(false)
   const previousTabRef = useRef(activeTab)
 
   const detectedWords = useMemo(() => {
@@ -1001,9 +1123,15 @@ export default function AppScreen({
     return () => clearTimeout(timer)
   }, [tabTransition])
 
+  useEffect(() => {
+    if (activeTab !== 'quest') {
+      setIsQuestGameMode(false)
+    }
+  }, [activeTab])
+
   function renderTabContent(tabKey) {
     if (tabKey === 'home') {
-      return <HomeTab user={user} />
+      return <HomeTab user={user} onTabChange={onTabChange} />
     }
 
     if (tabKey === 'shield') {
@@ -1019,7 +1147,7 @@ export default function AppScreen({
     }
 
     if (tabKey === 'quest') {
-      return <QuestTab user={user} onResolveQuest={onResolveQuest} />
+      return <QuestTab user={user} onResolveQuest={onResolveQuest} onGameModeChange={setIsQuestGameMode} />
     }
 
     return null
@@ -1030,19 +1158,21 @@ export default function AppScreen({
   }
 
   return (
-    <div className="phone-page app-page">
-      <header className="app-header">
-        <div className="app-header-brand">
-          <KindReachLogo size={32} rounded={10} />
-          <div className="app-header-title">
-            <h2>{activeTab === 'home' ? 'KindReach' : bottomTabs.find((tab) => tab.key === activeTab)?.label}</h2>
+    <div className={`phone-page app-page ${isQuestGameMode ? 'quest-game-mode' : ''}`}>
+      {!isQuestGameMode && (
+        <header className="app-header">
+          <div className="app-header-brand">
+            <KindReachLogo size={32} rounded={10} />
+            <div className="app-header-title">
+              <h2>{activeTab === 'home' ? 'KindReach' : bottomTabs.find((tab) => tab.key === activeTab)?.label}</h2>
+            </div>
           </div>
-        </div>
 
-        <button className="logout-btn" onClick={onLogout}>
-          <LogOut size={18} />
-        </button>
-      </header>
+          <button className="logout-btn" onClick={onLogout}>
+            <LogOut size={18} />
+          </button>
+        </header>
+      )}
 
       <main className="app-content tab-transition-stack">
         {tabTransition && (
@@ -1063,22 +1193,26 @@ export default function AppScreen({
         </div>
       </main>
 
-      <button className="sos-floating-bubble" onClick={() => setShowSosScreen(true)}>
-        <Siren size={18} />
-        <span>SOS</span>
-      </button>
+      {!isQuestGameMode && (
+        <>
+          <button className="sos-floating-bubble" onClick={() => setShowSosScreen(true)}>
+            <Siren size={18} />
+            <span>SOS</span>
+          </button>
 
-      <nav className="bottom-tabbar">
-        {bottomTabs.map((tab) => {
-          const Icon = tab.icon
-          return (
-            <button key={tab.key} className={activeTab === tab.key ? 'active' : ''} onClick={() => onTabChange(tab.key)}>
-              <Icon size={17} />
-              <span>{tab.label}</span>
-            </button>
-          )
-        })}
-      </nav>
+          <nav className="bottom-tabbar">
+            {bottomTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button key={tab.key} className={activeTab === tab.key ? 'active' : ''} onClick={() => onTabChange(tab.key)}>
+                  <Icon size={17} />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </>
+      )}
     </div>
   )
 }
