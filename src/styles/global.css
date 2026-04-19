@@ -10211,3 +10211,33 @@ button.feature-demo-card {
   color: #eefcff !important;
   box-shadow: 0 10px 20px rgba(45,226,207,.09), inset 0 1px 0 rgba(255,255,255,.08) !important;
 }
+
+/* ===== Home feature cards fill lower space ===== */
+.home-feature-grid.feature-card-grid {
+  gap: 10px !important;
+}
+
+.home-feature-grid .feature-demo-card,
+.home-feature-grid .feature-demo-card:nth-child(1),
+.home-feature-grid .feature-demo-card:nth-child(2),
+.home-feature-grid .feature-demo-card:nth-child(3),
+.home-feature-grid .feature-demo-card:nth-child(4) {
+  min-height: 152px !important;
+  padding: 13px 12px !important;
+  align-content: space-between !important;
+}
+
+.home-feature-grid .feature-demo-card strong {
+  font-size: .9rem !important;
+  line-height: 1.16 !important;
+}
+
+.home-feature-grid .feature-demo-card p {
+  font-size: .68rem !important;
+  line-height: 1.38 !important;
+}
+
+.home-feature-grid .feature-demo-card .feature-icon-badge {
+  width: 34px !important;
+  height: 34px !important;
+}

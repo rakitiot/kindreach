@@ -58,7 +58,3 @@ UPDATE
 - flow laporan dibuat lebih hidup, sehingga laporan dari user bisa muncul dan diproses di sisi staf/admin
 - dashboard staf dirapikan, dengan pembedaan hak aksi antara Guru BK dan Admin Sekolah
 - transisi antar halaman dan antar fitur dibuat lebih smooth agar pengalaman aplikasi terasa lebih halus
-
-1. yg hijau, space kosong disitu tu kaya kurang aja gitu, mungkin bisa ditambah apa ya garis garis atau bentuk apa gitu biar ga kosong?.. 
-2. yg merah, what if ikon nya kaya pintu kebuka? (gambar 2)
-3. kalo yg ungu tulisannya keep your health mental aja?
