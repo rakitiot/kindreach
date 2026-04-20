@@ -10241,3 +10241,32 @@ button.feature-demo-card {
   width: 34px !important;
   height: 34px !important;
 }
+
+/* ===== Home hero chip clipping fix ===== */
+.app-hero-card {
+  padding-bottom: 34px !important;
+  overflow: hidden;
+}
+
+.home-score-chip-row {
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0;
+  align-items: center;
+}
+
+.home-score-chip-row span {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1 !important;
+}
+
+.app-hero-card::after {
+  right: -18px !important;
+  bottom: 18px !important;
+  width: 96px !important;
+  height: 96px !important;
+  border-width: 15px !important;
+  opacity: .72;
+}
