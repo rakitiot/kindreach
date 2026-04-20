@@ -5811,6 +5811,7 @@ body {
 .quest-page-trail .trail-node .quest-map-copy strong {
   font-size: .52rem;
   line-height: 1.16;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -6437,6 +6438,7 @@ body {
   line-height: 1.18;
   white-space: normal;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -9529,6 +9531,7 @@ button.feature-demo-card {
 .quest-page-trail .trail-node .quest-map-copy strong {
   font-size: .52rem;
   line-height: 1.16;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -9698,6 +9701,7 @@ button.feature-demo-card {
   font-size: .52rem;
   line-height: 1.28;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
 }
 
@@ -10242,21 +10246,22 @@ button.feature-demo-card {
   height: 34px !important;
 }
 
-/* ===== Home hero chip clipping fix ===== */
+/* ===== Home hero chip spacing fix ===== */
 .app-hero-card {
-  padding-bottom: 34px !important;
+  padding-bottom: 40px !important;
   overflow: hidden;
 }
 
 .home-score-chip-row {
-  margin-top: 6px !important;
-  margin-bottom: 0 !important;
-  padding-bottom: 0;
+  margin-top: 8px !important;
+  margin-bottom: 2px !important;
+  padding-bottom: 2px;
   align-items: center;
 }
 
 .home-score-chip-row span {
-  min-height: 24px;
+  min-height: 27px;
+  padding: 6px 9px !important;
   display: inline-flex;
   align-items: center;
   line-height: 1 !important;
